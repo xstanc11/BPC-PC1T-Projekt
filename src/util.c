@@ -1,6 +1,12 @@
 // BPC-PC1T 2025 Project
 // @authors Šimon Čada, Rastislav Samuel Stanček
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
+
+#include "main.h"
 #include "util.h"
 
 void flush_stdin(void)
@@ -23,7 +29,7 @@ void read_line(const char *prompt, char *buf, size_t sz)
 }
 
 /**
- * Splits a string consiting of a name and surname into two
+ * Splits a string consisting of a name and surname into two
  * @param fullName Full name separated by a space
  * @param name Pointer to variable for the name
  * @param name Pointer to variable for the surname

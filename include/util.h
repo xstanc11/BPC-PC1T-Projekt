@@ -3,14 +3,8 @@
 
 #pragma once
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <string.h>
-#include "main.h"
-
 void flush_stdin(void);
 
-void read_line(const char *prompt, char *buf, size_t sz);
+void read_line(const char *, char *, size_t);
 
 void splitName(char *, char *, char *);

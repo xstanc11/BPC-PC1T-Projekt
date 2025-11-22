@@ -3,11 +3,6 @@
 
 #pragma once
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <string.h>
-
 #define MAX_NAME 100
 #define MAX_PHONE 32
 #define LINE_BUF 256
@@ -27,11 +22,11 @@
 // } CustTarifNode;
 
 /* Rodinný tarif: kolekce zákazníků sdílející tarif (bonus) */
-typedef struct FamilyPlan {
-    int id;
-    char name[MAX_NAME]; /* název rodinného plánu */
-    // Tarif *tarif; /* tarif, který sdílí */
-    // Customer **members; /* dynamické pole ukazatelů na členy (jednodušší implementace) */
-    int member_count;
-    struct FamilyPlan *next;
-} FamilyPlan;
+// typedef struct FamilyPlan {
+//     int id;
+//     char name[MAX_NAME]; /* název rodinného plánu */
+//     // Tarif *tarif; /* tarif, který sdílí */
+//     // Customer **members; /* dynamické pole ukazatelů na členy (jednodušší implementace) */
+//     int member_count;
+//     struct FamilyPlan *next;
+// } FamilyPlan;

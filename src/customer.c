@@ -1,6 +1,10 @@
 // BPC-PC1T 2025 Project
 // @authors Šimon Čada, Rastislav Samuel Stanček
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "customer.h"
 #include "util.h"
 
@@ -10,10 +14,19 @@ int NextCustID = 0;
  * Initialize Customer linked list
  * @param list Pointer to customer list
  */
-void CLInit(CustomerList_t *list)
+CustomerList_t* CLInit()
 {
+    CustomerList_t *list = malloc(sizeof(CustomerList_t));
+
+    if (!list) {
+        fprintf(stderr, "Memory allocation for customer list failed\n");
+        exit(-1);
+    }
+
     list->active = NULL;
     list->first = NULL;
+
+    return list;
 }
 
 /**
@@ -26,6 +39,10 @@ void CLDispose(CustomerList_t *list)
     while (list->active) {
         Customer_t *curr = list->active;
         CLNext(list);
+        if (curr->assignedTariffs != NULL) {
+            TLDispose(curr->assignedTariffs);
+            free(curr->assignedTariffs);
+        }
         free(curr);
     }
 }
@@ -100,9 +117,10 @@ Customer_t* CLFindCustomerByPhone(char *phone, Customer_t *customer)
  * Insert new customers with id == -1 to ensure correct functioning of CLEdit()
  * @param name Customer name
  * @param phone Phone number
+ * @param tariffs Pointer to a list of tariffs
  * @param list Pointer to customer list
  */
-void CLInsert(int id, char *fullName, char *phone, CustomerList_t *list)
+void CLInsert(int id, char *fullName, char *phone, TariffList_t *tariffs, CustomerList_t *list)
 {
     Customer_t *prev, *new;
     prev = list->first;
@@ -135,6 +153,7 @@ void CLInsert(int id, char *fullName, char *phone, CustomerList_t *list)
     new->surname[MAX_NAME - 1] = '\0';
     strncpy(new->phone, phone, MAX_PHONE - 1);
     new->phone[MAX_PHONE - 1] = '\0';
+    new->assignedTariffs = tariffs;
 
     CLFirst(list);
 
@@ -169,6 +188,7 @@ void CLEdit(int id, char *name, char *surname, char *phone, CustomerList_t *list
 {
     Customer_t *customer = CLFindCustomerByID(id, list->first);
     char newName[MAX_NAME] = {'\0'}, newSurname[MAX_NAME] = {'\0'}, newPhone[MAX_PHONE] = {'\0'};
+    TariffList_t *oldList = customer->assignedTariffs;
 
     if (!customer) {
         printf("Wrong id (ID = %d), customer not found\n", id);
@@ -186,10 +206,8 @@ void CLEdit(int id, char *name, char *surname, char *phone, CustomerList_t *list
     CLDelete(customer->id, list);
     strcat(newName, " ");
     strcat(newName, newSurname);
-    CLInsert(id, newName, newPhone, list);
+    CLInsert(id, newName, newPhone, oldList, list);
 }
-
-// TODO handle tarif assignment/removal and stuff
 
 /**
  * Delete a customer by ID
@@ -212,6 +230,8 @@ void CLDelete(int id, CustomerList_t *list)
 
     if (list->first == customer) {
         list->first = customer->next;
+        if (customer->assignedTariffs != NULL)
+            free(customer->assignedTariffs);
         free(customer);
         return;
     }
@@ -234,7 +254,97 @@ void CLPrint(CustomerList_t *list)
 {
     CLFirst(list);
     while (list->active) {
-        printf("ID: %d\nname: %s\nsurname: %s\nphone number: %s\n", list->active->id, list->active->name, list->active->surname, list->active->phone);
+        printf("ID: %d\nname: %s\nsurname: %s\nphone number: %s\n\n", list->active->id, list->active->name, list->active->surname, list->active->phone);
         CLNext(list);
+    }
+}
+
+// TODO is assigning a tariff to customer the same as assigning customer to tariff??
+/**
+ * Assign a tariff to customer
+ * @param tariffId ID of tariff to be assigned
+ * @param customerId ID of assignee customer
+ * @param tariffList List of available tariffs
+ * @param customerList List of registered customers
+ */
+void assignTariff(int tariffId, int customerId, TariffList_t *tariffList, CustomerList_t *customerList)
+{
+    Tariff_t *tariff = TLFindTariffByID(tariffId, tariffList->first);
+
+    if (!tariff) {
+        printf("Wrong id (ID = %d), tariff not found\n", tariffId);
+        return;
+    }
+
+    Customer_t *customer = CLFindCustomerByID(customerId, customerList->first);
+
+    if (!customer) {
+        printf("Wrong id (ID = %d), customer not found\n", customerId);
+        return;
+    }
+
+    if (!customer->assignedTariffs) // no assigned tariffs
+        customer->assignedTariffs = TLInit(); // no need to check failed malloc, TLInit() already does that
+    else {
+        if (TLFindTariffByID(tariffId, customer->assignedTariffs->first)) {
+            printf("Customer already has this tariff (ID = %d) assigned\n", tariffId);
+            return;
+        }
+    }
+
+    TLInsert(tariff->id, tariff->name, tariff->price, customer->assignedTariffs);
+}
+
+/**
+ * Unassign a tariff to customer
+ * @param tariffId ID of tariff to be unassigned
+ * @param customerId ID of assignee customer
+ * @param tariffList List of available tariffs
+ * @param customerList List of registered customers
+ */
+void unassignTariff(int tariffId, int customerId, TariffList_t *tariffList, CustomerList_t *customerList)
+{
+    Tariff_t *tariff = TLFindTariffByID(tariffId, tariffList->first);
+
+    if (!tariff) {
+        printf("Wrong id (ID = %d), tariff not found\n", tariffId);
+        return;
+    }
+
+    Customer_t *customer = CLFindCustomerByID(customerId, customerList->first);
+
+    if (!customer) {
+        printf("Wrong id (ID = %d), customer not found\n", customerId);
+        return;
+    }
+
+    if (!TLFindTariffByID(tariffId, customer->assignedTariffs->first)) {
+        printf("Customer doesn't have this tariff (ID = %d) assigned\n", tariffId);
+        return;
+    }
+
+    TLDelete(tariff->id, customer->assignedTariffs);
+}
+
+/**
+ * Print customer's assigned tariffs
+ * @param id ID of customer
+ * @param list List of registered customers
+ */
+void printAssignedTariffs(int id, CustomerList_t *list)
+{ 
+    Customer_t *customer = CLFindCustomerByID(id, list->first);
+
+    if (!customer) {
+        printf("Wrong id (ID = %d), customer not found\n", id);
+        return;
+    }
+
+    TLFirst(customer->assignedTariffs);
+    printf("Customer %s %s has the following tariffs assigned:\n", customer->name, customer->surname);
+
+    while (customer->assignedTariffs->active) {
+        printf("\tID: %d\n\tname: %s\n\tprice: %lf\n\n", customer->assignedTariffs->active->id, customer->assignedTariffs->active->name, customer->assignedTariffs->active->price);
+        TLNext(customer->assignedTariffs);
     }
 }
