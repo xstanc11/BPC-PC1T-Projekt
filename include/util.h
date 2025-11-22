@@ -7,7 +7,10 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include "main.h"
 
 void flush_stdin(void);
 
 void read_line(const char *prompt, char *buf, size_t sz);
+
+void splitName(char *, char *, char *);

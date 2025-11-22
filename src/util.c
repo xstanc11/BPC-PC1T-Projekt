@@ -21,3 +21,20 @@ void read_line(const char *prompt, char *buf, size_t sz)
     if (ln > 0 && buf[ln-1] == '\n')
         buf[ln-1] = '\0';
 }
+
+/**
+ * Splits a string consiting of a name and surname into two
+ * @param fullName Full name separated by a space
+ * @param name Pointer to variable for the name
+ * @param name Pointer to variable for the surname
+ */
+void splitName(char *fullName, char *name, char *surname)
+{
+    char tmp[2 * MAX_NAME] = {'\0'};
+    strncpy(tmp, fullName, sizeof(tmp));
+    tmp[2 * MAX_NAME - 1] = '\0';
+    strncpy(name, strtok(tmp, " "), MAX_NAME - 1);
+    name[MAX_NAME - 1] = '\0';
+    strncpy(surname, strtok(NULL, " "), MAX_NAME - 1);
+    surname[MAX_NAME - 1] = '\0';
+}

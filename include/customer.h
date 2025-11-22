@@ -36,4 +36,3 @@ void CLDelete(int, CustomerList_t *);
 
 void CLPrint(CustomerList_t *);
 
-void splitName(char *, char *, char *);

@@ -4,7 +4,7 @@
 #include "customer.h"
 #include "util.h"
 
-int NextID = 0;
+int NextCustID = 0;
 
 /**
  * Initialize Customer linked list
@@ -96,21 +96,8 @@ Customer_t* CLFindCustomerByPhone(char *phone, Customer_t *customer)
 }
 
 /**
- * Splits a string consiting of a name and surname into two
- * @param fullName Full name separated by a space
- * @param name Pointer to variable for the name
- * @param name Pointer to variable for the surname
- */
-void splitName(char *fullName, char *name, char *surname)
-{
-    char tmp[2 * MAX_NAME] = {'\0'};
-    strncpy(tmp, fullName, strlen(fullName));
-    strncpy(name, strtok(tmp, " "), MAX_NAME - 1);
-    strncpy(surname, strtok(NULL, " "), MAX_NAME - 1);
-}
-
-/**
- * Insert a customer into the customer list
+ * Insert a customer into the customer list.
+ * Insert new customers with id == -1 to ensure correct functioning of CLEdit()
  * @param name Customer name
  * @param phone Phone number
  * @param list Pointer to customer list
@@ -137,25 +124,29 @@ void CLInsert(int id, char *fullName, char *phone, CustomerList_t *list)
     }
     memset(new, 0, sizeof(Customer_t));
 
-    if (id < 0)
-        new->id = NextID++;
+    if (id == -1)
+        new->id = NextCustID++;
     else
         new->id = id;
-    strncpy(new->name, name, strlen(name));
-    strncpy(new->surname, surname, strlen(surname));
-    strncpy(new->phone, phone, strlen(phone));
 
-    if (!list->active) {
+    strncpy(new->name, name, MAX_NAME - 1);
+    new->name[MAX_NAME - 1] = '\0';
+    strncpy(new->surname, surname, MAX_NAME - 1);
+    new->surname[MAX_NAME - 1] = '\0';
+    strncpy(new->phone, phone, MAX_PHONE - 1);
+    new->phone[MAX_PHONE - 1] = '\0';
+
+    CLFirst(list);
+
+    if (!list->active) { // empty list
         new->next = NULL;
         list->first = new;
         list->active = new;
-    } else if (strcmp(surname, list->active->surname) < 0 || (strcmp(surname, list->active->surname) == 0 && strcmp(name, list->active->name) < 0)) {
-        CLFirst(list);
+    } else if (strcmp(surname, list->active->surname) < 0 || (strcmp(surname, list->active->surname) == 0 && strcmp(name, list->active->name) < 0)) { // insert as first
         new->next = list->first;
         list->first = new;
         list->active = new;
     } else {
-        CLFirst(list);
         while (list->active &&  (strcmp(surname, list->active->surname) > 0 || (strcmp(surname, list->active->surname) == 0 && strcmp(name, list->active->name) > 0))) {
             prev = list->active;
             CLNext(list);
@@ -184,10 +175,14 @@ void CLEdit(int id, char *name, char *surname, char *phone, CustomerList_t *list
         return;
     }
 
-    (name) ? strncpy(newName, name, strlen(name)) : strncpy(newName, customer->name, strlen(customer->name));
-    (surname) ? strncpy(newSurname, surname, strlen(surname)) : strncpy(newSurname, customer->surname, strlen(customer->surname));
-    (phone) ? strncpy(newPhone, phone, strlen(phone)) : strncpy(newPhone, customer->phone, strlen(customer->phone));
-    
+    (name) ? strncpy(newName, name, MAX_NAME - 1) : strncpy(newName, customer->name, MAX_NAME - 1);
+    (surname) ? strncpy(newSurname, surname, MAX_NAME - 1) : strncpy(newSurname, customer->surname, MAX_NAME - 1);
+    (phone) ? strncpy(newPhone, phone, MAX_PHONE - 1) : strncpy(newPhone, customer->phone, MAX_PHONE - 1);
+    newName[MAX_NAME - 1] = '\0';
+    newSurname[MAX_NAME - 1] = '\0';
+    newPhone[MAX_PHONE - 1] = '\0';
+
+
     CLDelete(customer->id, list);
     strcat(newName, " ");
     strcat(newName, newSurname);
@@ -213,7 +208,9 @@ void CLDelete(int id, CustomerList_t *list)
     if (!list->active) {
         printf("There are no customers in the system\n");
         return;
-    } else if (list->first == customer) {
+    }
+
+    if (list->first == customer) {
         list->first = customer->next;
         free(customer);
         return;

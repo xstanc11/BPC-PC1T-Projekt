@@ -4,13 +4,15 @@
 #include "main.h"
 #include "util.h"
 #include "customer.h"
+#include "tarif.h"
 
 /* Hlavní hlavičky seznamů */
-Tarif *tarif_head = NULL;
+// Tarif *tarif_head = NULL;
 // Customer *cust_head = NULL;
 FamilyPlan *family_head = NULL;
 
 CustomerList_t *custList = NULL;
+TarifList_t *tarifList = NULL;
 
 
 /* Pomocné globální id generátory */
@@ -18,62 +20,48 @@ int next_tarif_id = 1;
 int next_customer_id = 1;
 int next_family_id = 1;
 
-/* Najdi tarif podle ID */
-Tarif *find_tarif_by_id(int id) {
-    Tarif *cur = tarif_head;
-    while (cur) {
-        if (cur->id == id) return cur;
-        cur = cur->next;
-    }
-    return NULL;
-}
+// /* Najdi tarif podle ID */
+// Tarif *find_tarif_by_id(int id) {
+//     Tarif *cur = tarif_head;
+//     while (cur) {
+//         if (cur->id == id) return cur;
+//         cur = cur->next;
+//     }
+//     return NULL;
+// }
 
-/* safe strstr case-insensitive */
-char *strcasestr(const char *haystack, const char *needle) {
-    if (!*needle) return (char*)haystack;
-    for (; *haystack; haystack++) {
-        const char *h = haystack;
-        const char *n = needle;
-        while (*h && *n && tolower((unsigned char)*h) == tolower((unsigned char)*n)) {
-            h++; n++;
-        }
-        if (!*n) return (char*)haystack;
-    }
-    return NULL;
-}
+// /* Přidej tarif do globálního seznamu (na konec) */
+// void add_tarif(const char *name, double price) {
+//     Tarif *t = malloc(sizeof(Tarif));
+//     if (!t) { perror("malloc"); exit(1); }
+//     t->id = next_tarif_id++;
+//     strncpy(t->name, name, MAX_NAME-1); t->name[MAX_NAME-1] = '\0';
+//     t->price = price;
+//     t->next = NULL;
 
-/* Přidej tarif do globálního seznamu (na konec) */
-void add_tarif(const char *name, double price) {
-    Tarif *t = malloc(sizeof(Tarif));
-    if (!t) { perror("malloc"); exit(1); }
-    t->id = next_tarif_id++;
-    strncpy(t->name, name, MAX_NAME-1); t->name[MAX_NAME-1] = '\0';
-    t->price = price;
-    t->next = NULL;
+//     if (!tarif_head) tarif_head = t;
+//     else {
+//         Tarif *p = tarif_head;
+//         while (p->next) p = p->next;
+//         p->next = t;
+//     }
+//     printf("Tarif pridán (ID=%d).\n", t->id);
+// }
 
-    if (!tarif_head) tarif_head = t;
-    else {
-        Tarif *p = tarif_head;
-        while (p->next) p = p->next;
-        p->next = t;
-    }
-    printf("Tarif pridán (ID=%d).\n", t->id);
-}
-
-/* Edituj tarif podle ID */
-void edit_tarif(int id) {
-    Tarif *t = find_tarif_by_id(id);
-    if (!t) { printf("Tarif nenalezen.\n"); return; }
-    char buf[LINE_BUF];
-    read_line("Nové jméno (nechat prázdné = beze změny): ", buf, sizeof(buf));
-    if (buf[0]) strncpy(t->name, buf, MAX_NAME-1);
-    read_line("Nová cena (nechat prázdné = beze změny): ", buf, sizeof(buf));
-    if (buf[0]) {
-        double p = atof(buf);
-        t->price = p;
-    }
-    printf("Tarif upraven.\n");
-}
+// /* Edituj tarif podle ID */
+// void edit_tarif(int id) {
+//     Tarif *t = find_tarif_by_id(id);
+//     if (!t) { printf("Tarif nenalezen.\n"); return; }
+//     char buf[LINE_BUF];
+//     read_line("Nové jméno (nechat prázdné = beze změny): ", buf, sizeof(buf));
+//     if (buf[0]) strncpy(t->name, buf, MAX_NAME-1);
+//     read_line("Nová cena (nechat prázdné = beze změny): ", buf, sizeof(buf));
+//     if (buf[0]) {
+//         double p = atof(buf);
+//         t->price = p;
+//     }
+//     printf("Tarif upraven.\n");
+// }
 
 /* Smaž tarif - POZOR: musíme odstranit odkazy u zákazníků i rodinných plánů */
 // void delete_tarif(int id) {
@@ -117,15 +105,15 @@ void edit_tarif(int id) {
 // }
 
 /* Vypiš všechny tarify */
-void list_tarifs(void) {
-    if (!tarif_head) { printf("Žádné tarify.\n"); return; }
-    printf("Seznam tarifů:\n");
-    Tarif *t = tarif_head;
-    while (t) {
-        printf("  ID=%d | %s | %.2f\n", t->id, t->name, t->price);
-        t = t->next;
-    }
-}
+// void list_tarifs(void) {
+//     if (!tarif_head) { printf("Žádné tarify.\n"); return; }
+//     printf("Seznam tarifů:\n");
+//     Tarif *t = tarif_head;
+//     while (t) {
+//         printf("  ID=%d | %s | %.2f\n", t->id, t->name, t->price);
+//         t = t->next;
+//     }
+// }
 
 /* Smazat zákazníka a jeho přiřazené položky */
 // void delete_customer(int id) {
@@ -479,18 +467,13 @@ void show_main_menu() {
 
 /* Inicializace s pár demo tarify pro snazší testování */
 void seed_demo_data(void) {
-    // add_tarif("Základní 100 MB", 5.99);
-    // add_tarif("Neomezené volání", 19.99);
-    // add_tarif("Rodinný 50 GB", 29.99);
-    // CLInsert("Jan Aovak", "777111221", custList);
+    TLInsert(-1, "Rodinný 50 GB", 29.99, tarifList);
+    TLInsert(-1, "Neomezené volání", 19.99, tarifList);
+    TLInsert(-1, "Základní 100 MB", 5.99, tarifList);
     CLInsert(-1, "Jan Novak", "777111222", custList);
     CLInsert(-1, "Jan Novek", "777111225", custList);
+    CLInsert(-1, "Jan Aovak", "777111221", custList);
     CLInsert(-1, "Jane Novak", "777111223", custList);
-    // add_customer("Jan Novak", "777111222");
-    // add_customer("Petr Svoboda", "606333444");
-    // assign_tarif_to_customer(1, 1);
-    // assign_tarif_to_customer(1, 2);
-    // assign_tarif_to_customer(2, 2);
 }
 
 /* Uvolnit vše při ukončení */
@@ -514,6 +497,8 @@ void seed_demo_data(void) {
 // }
 
 int main(void) {
+    tarifList = malloc(sizeof(TarifList_t));
+    TLInit(tarifList);
     custList = malloc(sizeof(CustomerList_t));
     CLInit(custList);
     seed_demo_data(); /* přidej pár položek pro rychlé testování */
@@ -532,14 +517,23 @@ int main(void) {
     // }
     // free_all();
     printf("PRE\n\n");
+    printf("===TARIFS===\n");
+    TLPrint(tarifList);
+    printf("===CUSTOMERS===\n");
     CLPrint(custList);
+    TLEdit(1, NULL, 30, tarifList);
+    TLEdit(0, "penis", 69, tarifList);
     CLEdit(0, NULL, NULL, "4124123", custList);
     CLEdit(1, NULL, "Kokotik", NULL, custList);
     CLEdit(2, "PELE", NULL, NULL, custList);
     printf("AFTER\n\n");
+    printf("===TARIFS===\n");
+    TLPrint(tarifList);
+    printf("===CUSTOMERS===\n");
     CLPrint(custList);
     CLDispose(custList);
+    TLDispose(tarifList);
     free(custList);
-    printf("Konec programu.\n");
+    free(tarifList);
     return 0;
 }
