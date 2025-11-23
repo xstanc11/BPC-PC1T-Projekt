@@ -27,10 +27,6 @@ void read_line(const char *prompt, char *buf, size_t sz)
     if (ln > 0 && buf[ln-1] == '\n')
         buf[ln-1] = '\0';
 }
-
-
-
-
 /**
  * Splits a string consisting of a name and surname into two
  * @param fullName Full name separated by a space
