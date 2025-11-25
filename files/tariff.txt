@@ -1,0 +1,6 @@
+0;Neomezene xxl;1300
+1;Neomezene xl;1000
+2;Neomezene;700
+3;30Gb;600
+4;20Gb;400
+5;10GB;200

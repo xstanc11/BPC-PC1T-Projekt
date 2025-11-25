@@ -1,0 +1,6 @@
+0;Jan Novak;755098673;[0]
+1;Filip Kovar;635835725;[1]
+2;Pavel Prchl;234541758;[2]
+3;Ota Mocny;932917635;[3]
+4;Ondrej Volny;876023617;[]
+5;Marek Okno;777552772;[]

@@ -21,20 +21,20 @@
 // }
 
 void printMenu() {
-	printf("==== = HLAVNÍ MENU ==== =\n");
-	printf("1) Přidat zákazníka\n");
-	printf("2) Upravit zákazníka\n");
-	printf("3) Smazat zákazníka\n");
-	printf("4) Vypsat zákazníky \n");
-	printf("5) Přidat tarif\n");
-	printf("6) Upravit tarif\n");
-	printf("7) Smazat tarif\n");
-	printf("8) Vypsat tarify\n");
-	printf("9) Přiřadit tarif zákazníkovi\n");
-	printf("10) Odebrat tarif zákazníkovi\n");
-	printf("11) Vypsat tarify zákazníka\n");
-	printf("0) Konec\n");
-	printf("Volba: ");
+	printf("==== = Main MENU ==== =\n");
+	printf("1) Add customer\n");
+	printf("2) Edit customer\n");
+	printf("3) Delete customer\n");
+	printf("4) List customers \n");
+	printf("5) Add tariff\n");
+	printf("6) Edit tariff\n");
+	printf("7) Delete tariff\n");
+	printf("8) List tariff\n");
+	printf("9) Assign tariff to customer\n");
+	printf("10) Unassign tariff from customer\n");
+	printf("11) List tariffs assign to customer\n");
+	printf("0) End\n");
+	printf("Choice: ");
 }
 
 int main() {
@@ -51,9 +51,9 @@ int main() {
 
 		switch (choice) {
             case 1: { // insert customer
-                read_line("Jméno: ", name, sizeof(name));
-                read_line("Příjmení: ", surname, sizeof(surname));
-                read_line("Telefon: ", phone, sizeof(phone));
+                read_line("Name: ", name, sizeof(name));
+                read_line("Surname: ", surname, sizeof(surname));
+                read_line("Phone: ", phone, sizeof(phone));
 
                 strncpy(fullName, name, sizeof(name));
                 strcat(fullName, " ");
@@ -63,19 +63,19 @@ int main() {
                 break;
             }
             case 2: { // edit customer
-                printf("ID zákazníka: ");
+                printf("ID customer: ");
                 scanf("%d", &id);
 
-                read_line("Nové jméno (optional, in such case leave blank): ", name, sizeof(name));
-                read_line("Nové příjmení (optional, in such case leave blank): ", surname, sizeof(surname));
-                read_line("Nové telefon (optional, in such case leave blank): ", phone, sizeof(phone));
+                read_line("New name (optional, in such case leave blank): ", name, sizeof(name));
+                read_line("New surname (optional, in such case leave blank): ", surname, sizeof(surname));
+                read_line("New phone (optional, in such case leave blank): ", phone, sizeof(phone));
 
                 CLEdit(id, name, surname, phone, custList);
                 break;
             }
             case 3: { // delete customer
                 int id;
-                printf("ID zákazníka k odstranění: ");
+                printf("ID customers to delete: ");
                 scanf("%d", &id);
 
                 CLDelete(id, custList);
@@ -86,26 +86,26 @@ int main() {
                 break;
             }
             case 5: { // insert tariff
-                read_line("Název: ", name, sizeof(name));
-                printf("Cena: ");
+                read_line("Name: ", name, sizeof(name));
+                printf("Price: ");
                 scanf("%lf", &price);
 
                 TLInsert(-1, name, price, tariffList);
                 break;
             }
             case 6: { // edit tariff
-                printf("ID tarifu: ");
+                printf("ID tariff: ");
                 scanf("%d", &id);
 
-                read_line("Nový název: (optional) ", name, sizeof(name));
-                printf("Nová cena: (if wanted to be kept as original, type -1) ");
+                read_line("New name: (optional) ", name, sizeof(name));
+                printf("¨New price: (if wanted to be kept as original, type -1) ");
                 scanf("%lf", &price);
 
                 TLEdit(id, name, price, tariffList);
                 break;
             }
             case 7: { // delete tariff
-                printf("ID tarifu k odstranění: ");
+                printf("ID tariff to delete: ");
                 scanf("%d", &id);
                 
                 TLDelete(id, tariffList);
@@ -116,38 +116,38 @@ int main() {
                 break;
             }
             case 9: { // assign tariff
-                printf("ID zákazníka: ");
+                printf("ID customer: ");
                 scanf("%d", &custId);
 
-                printf("ID tarifu: ");
+                printf("ID tariff: ");
                 scanf("%d", &tariffId);
 
                 assignTariff(tariffId, custId, tariffList, custList);
                 break;
             }
             case 10: { // unassign tariff
-                printf("ID zákazníka: ");
+                printf("ID customer: ");
                 scanf("%d", &custId);
 
-                printf("ID tarifu: ");
+                printf("ID tariff: ");
                 scanf("%d", &tariffId);
 
                 unassignTariff(tariffId, custId, tariffList, custList);
                 break;
             }
             case 11: { // print customer's tariffs
-                printf("ID zákazníka: ");
+                printf("ID customer: ");
                 scanf("%d", &custId);
 
                 printAssignedTariffs(custId, custList);
                 break;
             }
             case 0: {
-                printf("Ukončuji program...");
+                printf("Ending program...");
                 break;
             }
             default: {
-                printf("Neplatná volba!");
+                printf("Invalide choice!");
             }
 		}
 	} while (choice != 0);
