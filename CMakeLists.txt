@@ -12,6 +12,7 @@ set(SOURCES
   src/util.c
   src/customer.c
   src/tariff.c
+  src/familytarif.c
 )
 
 add_executable(main ${SOURCES})
