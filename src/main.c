@@ -6,42 +6,52 @@
 #include "util.h"
 #include "main.h"
 
+// ANSI color codes for rainbow colors
+#define RED     "\033[31m"
+#define ORANGE  "\033[33m"
+#define YELLOW  "\033[93m"
+#define GREEN   "\033[32m"
+#define BLUE    "\033[34m"
+#define INDIGO  "\033[35m"
+#define VIOLET  "\033[95m"
+#define RESET   "\033[0m"
+
 void printMainMenu() {
-    printf("==== Main MENU ====\n");
-    printf("1) Customer Menu\n");
-    printf("2) Tariff Menu\n");
-    printf("3) Assignment Menu\n");
-    printf("0) End\n");
-    printf("Choice: ");
+    printf(RED "==== Main MENU ====" RESET "\n");
+    printf(ORANGE "1) Customer Menu" RESET "\n");
+    printf(YELLOW "2) Tariff Menu" RESET "\n");
+    printf(GREEN "3) Assignment Menu" RESET "\n");
+    printf(BLUE "0) End" RESET "\n");
+    printf(INDIGO "Choice: " RESET);
 }
 
 void printCustomerMenu() {
-    printf("==== Customer Menu ====\n");
-    printf("1) Add customer\n");
-    printf("2) Edit customer\n");
-    printf("3) Delete customer\n");
-    printf("4) List customers\n");
-    printf("0) Back to main menu\n");
-    printf("Choice: ");
+    printf(RED "==== Customer Menu ====" RESET "\n");
+    printf(ORANGE "1) Add customer" RESET "\n");
+    printf(YELLOW "2) Edit customer" RESET "\n");
+    printf(GREEN "3) Delete customer" RESET "\n");
+    printf(BLUE "4) List customers" RESET "\n");
+    printf(INDIGO "0) Back to main menu" RESET "\n");
+    printf(VIOLET "Choice: " RESET);
 }
 
 void printTariffMenu() {
-    printf("==== Tariff Menu ====\n");
-    printf("1) Add tariff\n");
-    printf("2) Edit tariff\n");
-    printf("3) Delete tariff\n");
-    printf("4) List tariffs\n");
-    printf("0) Back to main menu\n");
-    printf("Choice: ");
+    printf(RED "==== Tariff Menu ====" RESET "\n");
+    printf(ORANGE "1) Add tariff" RESET "\n");
+    printf(YELLOW "2) Edit tariff" RESET "\n");
+    printf(GREEN "3) Delete tariff" RESET "\n");
+    printf(BLUE "4) List tariffs" RESET "\n");
+    printf(INDIGO "0) Back to main menu" RESET "\n");
+    printf(VIOLET "Choice: " RESET);
 }
 
 void printAssignmentMenu() {
-    printf("==== Assignment Menu ====\n");
-    printf("1) Assign tariff to customer\n");
-    printf("2) Unassign tariff from customer\n");
-    printf("3) List tariffs assigned to customer\n");
-    printf("0) Back to main menu\n");
-    printf("Choice: ");
+    printf(RED "==== Assignment Menu ====" RESET "\n");
+    printf(ORANGE "1) Assign tariff to customer" RESET "\n");
+    printf(YELLOW "2) Unassign tariff from customer" RESET "\n");
+    printf(GREEN "3) List tariffs assigned to customer" RESET "\n");
+    printf(BLUE "0) Back to main menu" RESET "\n");
+    printf(INDIGO "Choice: " RESET);
 }
 
 void handleCustomerMenu(CustomerList_t* custList) {
@@ -55,9 +65,12 @@ void handleCustomerMenu(CustomerList_t* custList) {
 
         switch (choice) {
         case 1: { // insert customer
-            read_line("Name: ", name, sizeof(name));
-            read_line("Surname: ", surname, sizeof(surname));
-            read_line("Phone: ", phone, sizeof(phone));
+            printf(GREEN "Name: " RESET);
+            read_line("", name, sizeof(name));
+            printf(BLUE "Surname: " RESET);
+            read_line("", surname, sizeof(surname));
+            printf(VIOLET "Phone: " RESET);
+            read_line("", phone, sizeof(phone));
             strncpy(fullName, name, sizeof(name));
             strcat(fullName, " ");
             strcat(fullName, surname);
@@ -65,17 +78,20 @@ void handleCustomerMenu(CustomerList_t* custList) {
             break;
         }
         case 2: { // edit customer
-            printf("ID customer: ");
+            printf(ORANGE "ID customer: " RESET);
             scanf("%d", &id);
-            read_line("New name (optional, in such case leave blank): ", name, sizeof(name));
-            read_line("New surname (optional, in such case leave blank): ", surname, sizeof(surname));
-            read_line("New phone (optional, in such case leave blank): ", phone, sizeof(phone));
+            printf(GREEN "New name (optional, in such case leave blank): " RESET);
+            read_line("", name, sizeof(name));
+            printf(BLUE "New surname (optional, in such case leave blank): " RESET);
+            read_line("", surname, sizeof(surname));
+            printf(VIOLET "New phone (optional, in such case leave blank): " RESET);
+            read_line("", phone, sizeof(phone));
             CLEdit(id, name, surname, phone, custList);
             break;
         }
         case 3: { // delete customer
             int id;
-            printf("ID customers to delete: ");
+            printf(RED "ID customers to delete: " RESET);
             scanf("%d", &id);
             CLDelete(id, custList);
             break;
@@ -85,11 +101,11 @@ void handleCustomerMenu(CustomerList_t* custList) {
             break;
         }
         case 0: {
-            printf("Returning to main menu...\n");
+            printf(YELLOW "Returning to main menu..." RESET "\n");
             break;
         }
         default: {
-            printf("Invalid choice!");
+            printf(RED "Invalid choice!" RESET);
         }
         }
     } while (choice != 0);
@@ -107,23 +123,25 @@ void handleTariffMenu(TariffList_t* tariffList) {
 
         switch (choice) {
         case 1: { // insert tariff
-            read_line("Name: ", name, sizeof(name));
-            printf("Price: ");
+            printf(GREEN "Name: " RESET);
+            read_line("", name, sizeof(name));
+            printf(BLUE "Price: " RESET);
             scanf("%lf", &price);
             TLInsert(-1, name, price, tariffList);
             break;
         }
         case 2: { // edit tariff
-            printf("ID tariff: ");
+            printf(ORANGE "ID tariff: " RESET);
             scanf("%d", &id);
-            read_line("New name: (optional) ", name, sizeof(name));
-            printf("New price: (if wanted to be kept as original, type -1) ");
+            printf(GREEN "New name: (optional) " RESET);
+            read_line("", name, sizeof(name));
+            printf(BLUE "New price: (if wanted to be kept as original, type -1) " RESET);
             scanf("%lf", &price);
             TLEdit(id, name, price, tariffList);
             break;
         }
         case 3: { // delete tariff
-            printf("ID tariff to delete: ");
+            printf(RED "ID tariff to delete: " RESET);
             scanf("%d", &id);
             TLDelete(id, tariffList);
             break;
@@ -133,11 +151,11 @@ void handleTariffMenu(TariffList_t* tariffList) {
             break;
         }
         case 0: {
-            printf("Returning to main menu...\n");
+            printf(YELLOW "Returning to main menu..." RESET "\n");
             break;
         }
         default: {
-            printf("Invalid choice!");
+            printf(RED "Invalid choice!" RESET);
         }
         }
     } while (choice != 0);
@@ -153,33 +171,33 @@ void handleAssignmentMenu(CustomerList_t* custList, TariffList_t* tariffList) {
 
         switch (choice) {
         case 1: { // assign tariff
-            printf("ID customer: ");
+            printf(GREEN "ID customer: " RESET);
             scanf("%d", &custId);
-            printf("ID tariff: ");
+            printf(BLUE "ID tariff: " RESET);
             scanf("%d", &tariffId);
             assignTariff(tariffId, custId, tariffList, custList);
             break;
         }
         case 2: { // unassign tariff
-            printf("ID customer: ");
+            printf(ORANGE "ID customer: " RESET);
             scanf("%d", &custId);
-            printf("ID tariff: ");
+            printf(VIOLET "ID tariff: " RESET);
             scanf("%d", &tariffId);
             unassignTariff(tariffId, custId, tariffList, custList);
             break;
         }
         case 3: { // print customer's tariffs
-            printf("ID customer: ");
+            printf(YELLOW "ID customer: " RESET);
             scanf("%d", &custId);
             printAssignedTariffs(custId, custList);
             break;
         }
         case 0: {
-            printf("Returning to main menu...\n");
+            printf(YELLOW "Returning to main menu..." RESET "\n");
             break;
         }
         default: {
-            printf("Invalid choice!");
+            printf(RED "Invalid choice!" RESET);
         }
         }
     } while (choice != 0);
@@ -209,11 +227,11 @@ int main() {
             break;
         }
         case 0: {
-            printf("Ending program...");
+            printf(VIOLET "Ending program..." RESET);
             break;
         }
         default: {
-            printf("Invalid choice!");
+            printf(RED "Invalid choice!" RESET);
         }
         }
     } while (choice != 0);
