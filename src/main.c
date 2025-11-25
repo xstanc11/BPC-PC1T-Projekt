@@ -16,13 +16,18 @@
 #define VIOLET  "\033[95m"
 #define RESET   "\033[0m"
 
+// External function from familytarif.c
+extern void handleFamilyMenu(CustomerList_t* custList, TariffList_t* tariffList);
+extern void freeFamilyPlans();
+
 void printMainMenu() {
     printf(RED "==== Main MENU ====" RESET "\n");
     printf(ORANGE "1) Customer Menu" RESET "\n");
     printf(YELLOW "2) Tariff Menu" RESET "\n");
     printf(GREEN "3) Assignment Menu" RESET "\n");
-    printf(BLUE "0) End" RESET "\n");
-    printf(INDIGO "Choice: " RESET);
+    printf(BLUE "4) Family Plan Menu" RESET "\n");
+    printf(INDIGO "0) End" RESET "\n");
+    printf(VIOLET "Choice: " RESET);
 }
 
 void printCustomerMenu() {
@@ -57,12 +62,10 @@ void printAssignmentMenu() {
 void handleCustomerMenu(CustomerList_t* custList) {
     int choice, id;
     char name[MAX_NAME], surname[MAX_NAME], phone[MAX_PHONE], fullName[2 * MAX_NAME];
-
     do {
         printCustomerMenu();
         scanf("%d", &choice);
         flush_stdin();
-
         switch (choice) {
         case 1: { // insert customer
             printf(GREEN "Name: " RESET);
@@ -115,12 +118,10 @@ void handleTariffMenu(TariffList_t* tariffList) {
     int choice, id;
     char name[MAX_NAME];
     double price;
-
     do {
         printTariffMenu();
         scanf("%d", &choice);
         flush_stdin();
-
         switch (choice) {
         case 1: { // insert tariff
             printf(GREEN "Name: " RESET);
@@ -163,12 +164,10 @@ void handleTariffMenu(TariffList_t* tariffList) {
 
 void handleAssignmentMenu(CustomerList_t* custList, TariffList_t* tariffList) {
     int choice, custId, tariffId;
-
     do {
         printAssignmentMenu();
         scanf("%d", &choice);
         flush_stdin();
-
         switch (choice) {
         case 1: { // assign tariff
             printf(GREEN "ID customer: " RESET);
@@ -207,12 +206,10 @@ int main() {
     CustomerList_t* custList = CLInit();
     TariffList_t* tariffList = TLInit();
     int choice;
-
     do {
         printMainMenu();
         scanf("%d", &choice);
         flush_stdin();
-
         switch (choice) {
         case 1: {
             handleCustomerMenu(custList);
@@ -224,6 +221,10 @@ int main() {
         }
         case 3: {
             handleAssignmentMenu(custList, tariffList);
+            break;
+        }
+        case 4: {
+            handleFamilyMenu(custList, tariffList);
             break;
         }
         case 0: {
@@ -238,6 +239,7 @@ int main() {
 
     CLDispose(custList);
     TLDispose(tariffList);
+    freeFamilyPlans(); // Clean up family plans
     free(custList);
     free(tariffList);
     return 0;
