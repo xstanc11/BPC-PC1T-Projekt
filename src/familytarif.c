@@ -3,6 +3,14 @@
 #include <string.h>
 
 #define MAX_NAME 100
+#define RED     "\033[31m"
+#define ORANGE  "\033[33m"
+#define YELLOW  "\033[93m"
+#define GREEN   "\033[32m"
+#define BLUE    "\033[34m"
+#define INDIGO  "\033[35m"
+#define VIOLET  "\033[95m"
+#define RESET   "\033[0m"
 
 // Forward declarations for structures from main.c
 typedef struct Customer Customer;
@@ -31,21 +39,21 @@ FamilyPlan* family_head = NULL;
 int next_family_id = 1;
 
 void printFamilyMenu() {
-    printf("==== Family Plan Management ====\n");
-    printf("1) Create family plan\n");
-    printf("2) Add customer to family\n");
-    printf("3) Remove customer from family\n");
-    printf("4) List all family plans\n");
-    printf("5) Show family plan details\n");
-    printf("6) Delete family plan\n");
-    printf("0) Back to main menu\n");
-    printf("Choice: ");
+    printf(RED"==== Family Plan Management ====R"RESET"\n");
+    printf(ORANGE"1) Create family plan"RESET"\n");
+    printf(YELLOW"2) Add customer to family"RESET"\n");
+    printf(GREEN"3) Remove customer from family"RESET"\n");
+    printf(BLUE"4) List all family plans"RESET"\n");
+    printf(INDIGO"5) Show family plan details"RESET"\n");
+    printf(VIOLET"6) Delete family plan"RESET"\n");
+    printf(RED"0) Back to main menu"RESET"\n");
+    printf(ORANGE"Choice: ");
 }
 
 FamilyPlan* createFamilyPlan(const char* name, int tariff_id, double discount) {
     FamilyPlan* plan = malloc(sizeof(FamilyPlan));
     if (!plan) {
-        printf("Memory allocation failed!\n");
+        printf(YELLOW"Memory allocation failed!"RESET"\n");
         return NULL;
     }
 
@@ -70,7 +78,7 @@ FamilyPlan* createFamilyPlan(const char* name, int tariff_id, double discount) {
         current->next = plan;
     }
 
-    printf("Family plan created successfully! ID: %d\n", plan->id);
+    printf(GREEN"Family plan created successfully! ID: %d"RESET"\n", plan->id);
     return plan;
 }
 
@@ -81,13 +89,13 @@ void addCustomerToFamily(int family_id, int customer_id) {
     }
 
     if (!plan) {
-        printf("Family plan not found!\n");
+        printf(BLUE"Family plan not found!"RESET"\n");
         return;
     }
 
     for (int i = 0; i < plan->customer_count; i++) {
         if (plan->customer_ids[i] == customer_id) {
-            printf("Customer already in this family plan!\n");
+            printf(INDIGO"Customer already in this family plan!"RESET"\n");
             return;
         }
     }
@@ -96,7 +104,7 @@ void addCustomerToFamily(int family_id, int customer_id) {
         plan->max_customers *= 2;
         plan->customer_ids = realloc(plan->customer_ids, sizeof(int) * plan->max_customers);
         if (!plan->customer_ids) {
-            printf("Memory reallocation failed!\n");
+            printf(VIOLET"Memory reallocation failed!"RESET"\n");
             return;
         }
     }
@@ -104,7 +112,7 @@ void addCustomerToFamily(int family_id, int customer_id) {
     plan->customer_ids[plan->customer_count] = customer_id;
     plan->customer_count++;
 
-    printf("Customer added to family plan successfully!\n");
+    printf(RED"Customer added to family plan successfully!"RESET"\n");
 }
 
 void removeCustomerFromFamily(int family_id, int customer_id) {
@@ -114,7 +122,7 @@ void removeCustomerFromFamily(int family_id, int customer_id) {
     }
 
     if (!plan) {
-        printf("Family plan not found!\n");
+        printf(ORANGE"Family plan not found!"RESET"\n");
         return;
     }
 
@@ -124,24 +132,24 @@ void removeCustomerFromFamily(int family_id, int customer_id) {
                 plan->customer_ids[j] = plan->customer_ids[j + 1];
             }
             plan->customer_count--;
-            printf("Customer removed from family plan!\n");
+            printf(YELLOW"Customer removed from family plan!"RESET"\n");
             return;
         }
     }
 
-    printf("Customer not found in this family plan!\n");
+    printf(GREEN"Customer not found in this family plan!"RESET"\n");
 }
 
 void listFamilyPlans() {
     if (!family_head) {
-        printf("No family plans available.\n");
+        printf(BLUE"No family plans available."RESET"\n");
         return;
     }
 
-    printf("=== Family Plans ===\n");
+    printf(INDIGO"=== Family Plans ==="RESET"\n");
     FamilyPlan* current = family_head;
     while (current) {
-        printf("ID: %d | Name: %s | Tariff ID: %d | Members: %d | Discount: %.1f%%\n",
+        printf(RED"ID: %d | Name: %s | Tariff ID: %d | Members: %d | Discount: %.1f%%"RESET"\n",
             current->id, current->name, current->tariff_id,
             current->customer_count, current->discount_percentage);
         current = current->next;
@@ -172,20 +180,20 @@ void showFamilyDetails(int family_id, CustomerList_t* custList, TariffList_t* ta
     }
 
     if (!plan) {
-        printf("Family plan not found!\n");
+        printf(ORANGE"Family plan not found!"RESET"\n");
         return;
     }
 
-    printf("=== Family Plan Details ===\n");
-    printf("ID: %d\n", plan->id);
-    printf("Name: %s\n", plan->name);
-    printf("Tariff ID: %d\n", plan->tariff_id);
-    printf("Discount: %.1f%%\n", plan->discount_percentage);
-    printf("Total Price: %.2f\n", calculateFamilyPrice(family_id, tariffList));
+    printf(RED"=== Family Plan Details ==="RESET"\n");
+    printf(ORANGE"ID: %d"RESET"\n", plan->id);
+    printf(YELLOW"Name: %s"RESET"\n", plan->name);
+    printf(GREEN"Tariff ID: %d"RESET"\n", plan->tariff_id);
+    printf(BLUE"Discount: %.1f%%"RESET"\n", plan->discount_percentage);
+    printf(INDIGO"Total Price: %.2f"RESET"\n", calculateFamilyPrice(family_id, tariffList));
 
-    printf("Members (%d):\n", plan->customer_count);
+    printf(RED"Members (%d):"RESET"\n", plan->customer_count);
     for (int i = 0; i < plan->customer_count; i++) {
-        printf("  - Customer ID: %d\n", plan->customer_ids[i]);
+        printf(ORANGE"  - Customer ID: %d"RESET"\n", plan->customer_ids[i]);
     }
 }
 
@@ -199,7 +207,7 @@ void deleteFamilyPlan(int family_id) {
     }
 
     if (!current) {
-        printf("Family plan not found!\n");
+        printf(YELLOW"Family plan not found!"RESET"\n");
         return;
     }
 
@@ -213,7 +221,7 @@ void deleteFamilyPlan(int family_id) {
     free(current->customer_ids);
     free(current);
 
-    printf("Family plan deleted successfully!\n");
+    printf(GREEN"Family plan deleted successfully!"RESET"\n");
 }
 
 void handleFamilyMenu(CustomerList_t* custList, TariffList_t* tariffList) {
@@ -229,15 +237,15 @@ void handleFamilyMenu(CustomerList_t* custList, TariffList_t* tariffList) {
 
         switch (choice) {
         case 1: {
-            printf("Family plan name: ");
+            printf(BLUE"Family plan name: "RESET);
             read_line("", name, sizeof(name));
-            printf("Tariff ID: ");
+            printf(INDIGO"Tariff ID: "RESET);
             scanf("%d", &tariff_id);
-            printf("Discount percentage (0-50): ");
+            printf(RED"Discount percentage (0-50): "RESET);
             scanf("%lf", &discount);
 
             if (discount < 0 || discount > 50) {
-                printf("Invalid discount! Using 10%%\n");
+                printf(ORANGE"Invalid discount! Using 10%%"RESET"\n");
                 discount = 10.0;
             }
 
@@ -245,17 +253,17 @@ void handleFamilyMenu(CustomerList_t* custList, TariffList_t* tariffList) {
             break;
         }
         case 2: {
-            printf("Family plan ID: ");
+            printf(YELLOW"Family plan ID: "RESET);
             scanf("%d", &family_id);
-            printf("Customer ID to add: ");
+            printf(GREEN"Customer ID to add: "RESET);
             scanf("%d", &customer_id);
             addCustomerToFamily(family_id, customer_id);
             break;
         }
         case 3: {
-            printf("Family plan ID: ");
+            printf(BLUE"Family plan ID: "RESET);
             scanf("%d", &family_id);
-            printf("Customer ID to remove: ");
+            printf(INDIGO"Customer ID to remove: "RESET);
             scanf("%d", &customer_id);
             removeCustomerFromFamily(family_id, customer_id);
             break;
@@ -265,23 +273,23 @@ void handleFamilyMenu(CustomerList_t* custList, TariffList_t* tariffList) {
             break;
         }
         case 5: {
-            printf("Family plan ID: ");
+            printf(RED"Family plan ID: "RESET);
             scanf("%d", &family_id);
             showFamilyDetails(family_id, custList, tariffList);
             break;
         }
         case 6: {
-            printf("Family plan ID to delete: ");
+            printf(ORANGE"Family plan ID to delete: "RESET);
             scanf("%d", &family_id);
             deleteFamilyPlan(family_id);
             break;
         }
         case 0: {
-            printf("Returning to main menu...\n");
+            printf(YELLOW"Returning to main menu..."RESET"\n");
             break;
         }
         default: {
-            printf("Invalid choice!\n");
+            printf(GREEN"Invalid choice!"RESET"\n");
         }
         }
     } while (choice != 0);
