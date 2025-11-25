@@ -9,7 +9,7 @@
 #include "main.h"
 #include "util.h"
 
-void flush_stdin(void)
+void flush_stdin()
 {
     int c;
     while ((c = getchar()) != '\n' && c != EOF) {}

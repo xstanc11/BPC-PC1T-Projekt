@@ -340,6 +340,11 @@ void printAssignedTariffs(int id, CustomerList_t *list)
         return;
     }
 
+    if (!customer->assignedTariffs) {
+        printf("Customer (ID = %d) has no tariffs assigned\n", customer->id);
+        return;
+    }
+
     TLFirst(customer->assignedTariffs);
     printf("Customer %s %s has the following tariffs assigned:\n", customer->name, customer->surname);
 

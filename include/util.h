@@ -3,7 +3,7 @@
 
 #pragma once
 
-void flush_stdin(void);
+void flush_stdin();
 
 void read_line(const char *, char *, size_t);
 
