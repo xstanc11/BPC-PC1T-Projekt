@@ -17,7 +17,7 @@ int NextTariffID = 0;
  */
 TariffList_t* TLInit()
 {
-    TariffList_t *list = malloc(sizeof(TariffList_t));
+    TariffList_t* list = malloc(sizeof(TariffList_t));
 
     if (!list) {
         fprintf(stderr, "Memory allocation for tarif list failed\n");
@@ -34,11 +34,11 @@ TariffList_t* TLInit()
  * Free all allocated nodes
  * @param list Pointer to tariff list
  */
-void TLDispose(TariffList_t *list)
+void TLDispose(TariffList_t* list)
 {
     TLFirst(list);
     while (list->active) {
-        Tariff_t *curr = list->active;
+        Tariff_t* curr = list->active;
         TLNext(list);
         free(curr);
     }
@@ -48,7 +48,7 @@ void TLDispose(TariffList_t *list)
  * Get first tariff
  * @param list Pointer to tariff list
  */
-void TLFirst(TariffList_t *list)
+void TLFirst(TariffList_t* list)
 {
     list->active = list->first;
 }
@@ -57,7 +57,7 @@ void TLFirst(TariffList_t *list)
  * Get next tariff in list
  * @param list Pointer to tariff list
  */
-void TLNext(TariffList_t *list)
+void TLNext(TariffList_t* list)
 {
     list->active = list->active->next;
 }
@@ -67,7 +67,7 @@ void TLNext(TariffList_t *list)
  * @param name Query name
  * @param tariff Pointer to tariff
  */
-Tariff_t* TLFindTariffByName(char *name, Tariff_t *tariff)
+Tariff_t* TLFindTariffByName(char* name, Tariff_t* tariff)
 {
     if (!tariff)
         return NULL;
@@ -82,7 +82,7 @@ Tariff_t* TLFindTariffByName(char *name, Tariff_t *tariff)
  * @param name Query ID
  * @param tariff Pointer to tariff
  */
-Tariff_t* TLFindTariffByID(int id, Tariff_t *tariff)
+Tariff_t* TLFindTariffByID(int id, Tariff_t* tariff)
 {
     if (!tariff)
         return NULL;
@@ -99,9 +99,9 @@ Tariff_t* TLFindTariffByID(int id, Tariff_t *tariff)
  * @param phone Phone number
  * @param list Pointer to tariff list
  */
-void TLInsert(int id, char *name, double price, TariffList_t *list)
+void TLInsert(int id, char* name, double price, TariffList_t* list)
 {
-    Tariff_t *prev, *new;
+    Tariff_t* prev, * new;
     prev = list->first;
 
     if (TLFindTariffByName(name, list->first)) {
@@ -130,16 +130,18 @@ void TLInsert(int id, char *name, double price, TariffList_t *list)
         new->next = NULL;
         list->first = new;
         list->active = new;
-    } else if (new->id < list->active->id) { // insert as first
+    }
+    else if (new->id < list->active->id) { // insert as first
         new->next = list->first;
         list->first = new;
         list->active = new;
-    } else {
-        while (list->active &&  new->id > list->active->id) {
+    }
+    else {
+        while (list->active && new->id > list->active->id) {
             prev = list->active;
             TLNext(list);
         }
-        
+
         prev->next = new;
         new->next = list->active;
         list->active = new;
@@ -150,12 +152,12 @@ void TLInsert(int id, char *name, double price, TariffList_t *list)
  * Edit a tariff by ID
  * @param id Tariff ID
  * @param name New tariff name (optional)
- * @param price New tariff price (optional, -1 if wanted to be kept original) 
+ * @param price New tariff price (optional, -1 if wanted to be kept original)
  */
-void TLEdit(int id, char *name, double price, TariffList_t *list)
+void TLEdit(int id, char* name, double price, TariffList_t* list)
 {
-    Tariff_t *tariff = TLFindTariffByID(id, list->first);
-    char newName[MAX_NAME] = {'\0'};
+    Tariff_t* tariff = TLFindTariffByID(id, list->first);
+    char newName[MAX_NAME] = { '\0' };
     double newPrice = 0.0;
 
     if (!tariff) {
@@ -176,9 +178,9 @@ void TLEdit(int id, char *name, double price, TariffList_t *list)
  * @param id Tariff ID
  * @param list Pointer to tariff list
  */
-void TLDelete(int id, TariffList_t *list)
+void TLDelete(int id, TariffList_t* list)
 {
-    Tariff_t *tariff = TLFindTariffByID(id, list->first);
+    Tariff_t* tariff = TLFindTariffByID(id, list->first);
     if (!tariff) {
         printf("Wrong id (ID = %d), tariff not found\n", id);
         return;
@@ -189,7 +191,7 @@ void TLDelete(int id, TariffList_t *list)
         printf("There are no tariffs in the system\n");
         return;
     }
-    
+
     if (list->first == tariff) {
         list->first = tariff->next;
         free(tariff);
@@ -210,7 +212,7 @@ void TLDelete(int id, TariffList_t *list)
  * Print tariffs
  * @param list Pointer to tariff list
  */
-void TLPrint(TariffList_t *list)
+void TLPrint(TariffList_t* list)
 {
     TLFirst(list);
     while (list->active) {
