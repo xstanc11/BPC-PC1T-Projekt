@@ -8,6 +8,7 @@ set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_C_FLAGS_DEBUG -g3)
 
 set(SOURCES
+  src/fileOP.c
   src/util.c
   src/customer.c
   src/tariff.c

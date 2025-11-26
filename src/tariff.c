@@ -216,7 +216,7 @@ void TLPrint(TariffList_t* list)
 {
     TLFirst(list);
     while (list->active) {
-        printf("ID: %d\nname: %s\nprice: %lf\n\n", list->active->id, list->active->name, list->active->price);
+        printf("ID: %d\nname: %s\nprice: %.2lfczk\n\n", list->active->id, list->active->name, list->active->price);
         TLNext(list);
     }
 }

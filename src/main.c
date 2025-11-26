@@ -8,8 +8,8 @@
 #include "customer.h"
 #include "tariff.h"
 #include "util.h"
-// #include "main.h"
 #include "familyTariff.h"
+#include "fileOP.h"
 
 void printMainMenu()
 {
@@ -202,8 +202,9 @@ void handleAssignmentMenu(CustomerList_t *custList, TariffList_t *tariffList)
 
 int main()
 {
-    CustomerList_t* custList = CLInit();
     TariffList_t* tariffList = TLInit();
+    CustomerList_t* custList = CLInit();
+    readFile(tariffList, custList);
     int choice;
     do {
         printMainMenu();
@@ -241,6 +242,6 @@ int main()
     freeFamilyPlans(); // Clean up family plans
     free(custList);
     free(tariffList);
-
+    // closeFile();
     return 0;
 }
