@@ -213,9 +213,13 @@ void handleAssignmentMenu(CustomerList_t *custList, TariffList_t *tariffList)
 
 int main()
 {
+    int machine;
+    printf(GREEN "Specify the OS of the machine: (LINUX = 0, WINDOWS = 1)" RESET "\n");
+    scanf("%d", &machine);
+    flushStdin();
     TariffList_t* tariffList = TLInit();
     CustomerList_t* custList = CLInit();
-    readFile(tariffList, custList);
+    readFile(machine, tariffList, custList);
     int choice;
     do {
         printMainMenu();
@@ -248,7 +252,7 @@ int main()
         }
     } while (choice != 0);
 
-    saveFile(tariffList, custList);
+    saveFile(machine, tariffList, custList);
 
     CLDispose(custList);
     TLDispose(tariffList);

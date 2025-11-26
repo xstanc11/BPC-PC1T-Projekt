@@ -1,6 +1,6 @@
-0;Jan Novak;755098673;0,4,5
 1;Filip Kovar;635835725;1
-2;Pavel Prchl;234541758;2
 3;Ota Mocny;932917635;3
-4;Ondrej Volny;876023617;-
+4;Ondrej Nevolny;876023617;-
+0;Jan Novak;755098673;0,4,5
 5;Marek Okno;777552772;-
+2;Pavel Prchl;234541758;2

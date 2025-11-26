@@ -32,14 +32,18 @@ void parseTariffs(char *tariffs, int id, TariffList_t *tariffList, CustomerList_
  * @param tariffList Pointer to list of tariffs
  * @param customerList Pointer to list of customers
  */
-void readFile(TariffList_t *tariffList, CustomerList_t *customerList)
+void readFile(int machine, TariffList_t *tariffList, CustomerList_t *customerList)
 {
     FILE *f;
     char inputBuff[MAX_NAME * 4] = {'\0'}; // for good measure
     char *id, name[MAX_NAME], phone[MAX_PHONE], price[MAX_NAME], tariffs[MAX_NAME];
     char c;
     char *walker = inputBuff;
-    f = fopen("../files/tariff.txt", "r");
+
+    if (machine == LINUX)
+        f = fopen("../files/tariff.txt", "r");
+    else
+        f = fopen("../../../files/tariff.txt", "r");
     
     if (!f) {
         fprintf(stderr, RED"Unable to open tariff.txt\n"RESET);
@@ -63,7 +67,11 @@ void readFile(TariffList_t *tariffList, CustomerList_t *customerList)
 
     fclose(f);
 
-    f = fopen("../files/customer.txt", "r");
+    if (machine == LINUX)
+        f = fopen("../files/customer.txt", "r");
+    else
+        f = fopen("../../../files/customer.txt", "r");
+
 
     if (!f) {
         fprintf(stderr, RED"Unable to open customer.txt\n"RESET);
@@ -95,13 +103,17 @@ void readFile(TariffList_t *tariffList, CustomerList_t *customerList)
  * @param tariffList Pointer to list of tariffs
  * @param customerList Pointer to list of customers
  */
-void saveFile(TariffList_t *tariffList, CustomerList_t *customerList)
+void saveFile(int machine, TariffList_t *tariffList, CustomerList_t *customerList)
 {
     Customer_t *customer;
     Tariff_t *tariff, *assignedTariff;
     FILE *f;
 
-    f = fopen("../files/tariff.txt", "w");
+    if (machine == LINUX)
+        f = fopen("../files/tariff.txt", "w");
+    else
+        f = fopen("../../../files/tariff.txt", "r");
+
 
     if (!f) {
         fprintf(stderr, RED"Unable to open tariff.txt\n"RESET);
@@ -117,8 +129,11 @@ void saveFile(TariffList_t *tariffList, CustomerList_t *customerList)
 
     fclose(f);
 
-    f = fopen("../files/customer.txt", "w");
-    
+    if (machine == LINUX)
+        f = fopen("../files/customer.txt", "w");
+    else
+        f = fopen("../../../files/tariff.txt", "r");
+
     if (!f) {
         fprintf(stderr, RED"Unable to open customer.txt\n"RESET);
         exit(-1);
