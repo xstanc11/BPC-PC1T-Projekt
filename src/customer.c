@@ -13,6 +13,7 @@ int NextCustID = 0;
 /**
  * Initialize Customer linked list
  * @param list Pointer to customer list
+ * @return Allocated pointer to head of customer list
  */
 CustomerList_t* CLInit()
 {
@@ -69,6 +70,7 @@ void CLNext(CustomerList_t *list)
  * Returns customer if name matches
  * @param name Query name
  * @param customer Pointer to customer
+ * @return Customer if found, otherwise NULL
  */
 Customer_t* CLFindCustomerByName(char *name, char *surname, Customer_t *customer)
 {
@@ -80,12 +82,11 @@ Customer_t* CLFindCustomerByName(char *name, char *surname, Customer_t *customer
         CLFindCustomerByName(name, surname, customer->next);
 }
 
-//TODO find/list multiple customers
-
 /**
  * Returns customer if ID matches
  * @param name Query ID
  * @param customer Pointer to customer
+ * @return Customer if found, otherwise NULL
  */
 Customer_t* CLFindCustomerByID(int id, Customer_t *customer)
 {
@@ -101,6 +102,7 @@ Customer_t* CLFindCustomerByID(int id, Customer_t *customer)
  * Returns customer if phone number matches
  * @param name Query number
  * @param customer Pointer to customer
+ * @return Customer if found, otherwise NULL
  */
 Customer_t* CLFindCustomerByPhone(char *phone, Customer_t *customer)
 {

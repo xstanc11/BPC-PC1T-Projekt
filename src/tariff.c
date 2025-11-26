@@ -14,6 +14,7 @@ int NextTariffID = 0;
 /**
  * Initialize Tariff linked list
  * @param list Pointer to tariff list
+ * @return Allocated pointer to head of tariff list
  */
 TariffList_t* TLInit()
 {
@@ -66,6 +67,7 @@ void TLNext(TariffList_t* list)
  * Returns tariff if name matches
  * @param name Query name
  * @param tariff Pointer to tariff
+ * @return Tariff if found, otherwise NULL
  */
 Tariff_t* TLFindTariffByName(char* name, Tariff_t* tariff)
 {
@@ -81,6 +83,7 @@ Tariff_t* TLFindTariffByName(char* name, Tariff_t* tariff)
  * Returns tariff if ID matches
  * @param name Query ID
  * @param tariff Pointer to tariff
+ * @return Tariff if found, otherwise NULL
  */
 Tariff_t* TLFindTariffByID(int id, Tariff_t* tariff)
 {

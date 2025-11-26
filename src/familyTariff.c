@@ -221,7 +221,7 @@ void handleFamilyMenu(CustomerList_t* custList, TariffList_t* tariffList)
 		switch (choice) {
 		case 1: {
 			printf(BLUE"Family plan name: "RESET);
-			readLine("", name, sizeof(name));
+			readLine(name);
 			printf(INDIGO"Tariff ID: "RESET);
 			scanf("%d", &tariff_id);
 			flushStdin();

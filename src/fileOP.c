@@ -7,6 +7,13 @@
 
 #include "fileOP.h"
 
+/**
+ * Parses out tariffs during file read and assigns them correctly
+ * @param tariffs Pointer to list of tariffs to be assigned
+ * @param id Id of customer
+ * @param tariffList Pointer to list of tariffs
+ *  @param customerList Pointer to list of customers
+ */
 void parseTariffs(char *tariffs, int id, TariffList_t *tariffList, CustomerList_t *customerList)
 {
     char *token, tariffId[1];
@@ -20,6 +27,11 @@ void parseTariffs(char *tariffs, int id, TariffList_t *tariffList, CustomerList_
     }
 }
 
+/**
+ * Reads from persistent file into memory
+ * @param tariffList Pointer to list of tariffs
+ * @param customerList Pointer to list of customers
+ */
 void readFile(TariffList_t *tariffList, CustomerList_t *customerList)
 {
     FILE *f;
@@ -78,6 +90,11 @@ void readFile(TariffList_t *tariffList, CustomerList_t *customerList)
     fclose(f);
 }
 
+/**
+ * Stores memory into persistent file
+ * @param tariffList Pointer to list of tariffs
+ * @param customerList Pointer to list of customers
+ */
 void saveFile(TariffList_t *tariffList, CustomerList_t *customerList)
 {
     Customer_t *customer;

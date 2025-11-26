@@ -9,23 +9,28 @@
 #include "main.h"
 #include "util.h"
 
+/**
+ * Flush stdin after scanf()
+ */
 void flushStdin()
 {
     int c;
     while ((c = getchar()) != '\n' && c != EOF) {}
 }
 
-void readLine(const char *prompt, char *buf, size_t sz)
+/**
+ * Reads from stdin and stores in buffer
+ * @param buff Pointer to buffer
+ */
+void readLine(char *buff)
 {
-    if (prompt)
-        printf("%s", prompt);
-    if (fgets(buf, (int)sz, stdin) == NULL) {
-        buf[0] = '\0';
+    if (fgets(buff, sizeof(buff), stdin) == NULL) {
+        buff[0] = '\0';
         return;
     }
-    size_t ln = strlen(buf);
-    if (ln > 0 && buf[ln-1] == '\n')
-        buf[ln-1] = '\0';
+    size_t len = strlen(buff);
+    if (len > 0 && buff[len-1] == '\n')
+        buff[len-1] = '\0';
 }
 /**
  * Splits a string consisting of a name and surname into two

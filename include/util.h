@@ -18,6 +18,6 @@
 
 void flushStdin();
 
-void readLine(const char *, char *, size_t);
+void readLine(char *);
 
 void splitName(char *, char *, char *);
