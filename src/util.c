@@ -9,13 +9,13 @@
 #include "main.h"
 #include "util.h"
 
-void flush_stdin()
+void flushStdin()
 {
     int c;
     while ((c = getchar()) != '\n' && c != EOF) {}
 }
 
-void read_line(const char *prompt, char *buf, size_t sz)
+void readLine(const char *prompt, char *buf, size_t sz)
 {
     if (prompt)
         printf("%s", prompt);

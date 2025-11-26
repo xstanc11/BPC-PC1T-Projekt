@@ -195,15 +195,12 @@ void CLEdit(int id, char *name, char *surname, char *phone, CustomerList_t *list
         return;
     }
 
-    // printf("phone: %s\n", customer->phone);
-
-    (name) ? strncpy(newName, name, MAX_NAME - 1) : strncpy(newName, customer->name, MAX_NAME - 1);
-    (surname) ? strncpy(newSurname, surname, MAX_NAME - 1) : strncpy(newSurname, customer->surname, MAX_NAME - 1);
-    (phone) ? strncpy(newPhone, phone, MAX_PHONE - 1) : strncpy(newPhone, customer->phone, MAX_PHONE - 1);
+    (name[0] != '\0') ? strncpy(newName, name, MAX_NAME - 1) : strncpy(newName, customer->name, MAX_NAME - 1);
+    (surname[0] != '\0') ? strncpy(newSurname, surname, MAX_NAME - 1) : strncpy(newSurname, customer->surname, MAX_NAME - 1);
+    (phone[0] != '\0') ? strncpy(newPhone, phone, MAX_PHONE - 1) : strncpy(newPhone, customer->phone, MAX_PHONE - 1);
     newName[MAX_NAME - 1] = '\0';
     newSurname[MAX_NAME - 1] = '\0';
     newPhone[MAX_PHONE - 1] = '\0';
-
 
     CLDelete(customer->id, list);
     strcat(newName, " ");

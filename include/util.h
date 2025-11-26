@@ -16,8 +16,8 @@
 #define VIOLET  "\033[95m"
 #define RESET   "\033[0m"
 
-void flush_stdin();
+void flushStdin();
 
-void read_line(const char *, char *, size_t);
+void readLine(const char *, char *, size_t);
 
 void splitName(char *, char *, char *);

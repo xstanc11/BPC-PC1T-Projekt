@@ -165,7 +165,7 @@ void TLEdit(int id, char* name, double price, TariffList_t* list)
         return;
     }
 
-    (name) ? strncpy(newName, name, MAX_NAME - 1) : strncpy(newName, tariff->name, MAX_NAME - 1);
+    (name[0] != '\0') ? strncpy(newName, name, MAX_NAME - 1) : strncpy(newName, tariff->name, MAX_NAME - 1);
     newName[MAX_NAME - 1] = '\0';
     (price != -1) ? (newPrice = price) : (newPrice = tariff->price);
 

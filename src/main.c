@@ -57,19 +57,19 @@ void printAssignmentMenu()
 void handleCustomerMenu(CustomerList_t *custList)
 {
     int choice, id;
-    char name[MAX_NAME], surname[MAX_NAME], phone[MAX_PHONE], fullName[2 * MAX_NAME];
+    char name[MAX_NAME] = {'\0'}, surname[MAX_NAME] = {'\0'}, phone[MAX_PHONE] = {'\0'}, fullName[2 * MAX_NAME] = {'\0'};
     do {
         printCustomerMenu();
         scanf("%d", &choice);
-        flush_stdin();
+        flushStdin();
         switch (choice) {
         case 1: { // insert customer
             printf(GREEN "Name: " RESET);
-            read_line("", name, sizeof(name));
+            readLine("", name, sizeof(name));
             printf(BLUE "Surname: " RESET);
-            read_line("", surname, sizeof(surname));
+            readLine("", surname, sizeof(surname));
             printf(VIOLET "Phone: " RESET);
-            read_line("", phone, sizeof(phone));
+            readLine("", phone, sizeof(phone));
             strncpy(fullName, name, sizeof(name));
             strcat(fullName, " ");
             strcat(fullName, surname);
@@ -79,13 +79,13 @@ void handleCustomerMenu(CustomerList_t *custList)
         case 2: { // edit customer
             printf(ORANGE "ID customer: " RESET);
             scanf("%d", &id);
+            flushStdin();
             printf(GREEN "New name (optional, in such case leave blank): " RESET);
-            read_line("", name, sizeof(name));
+            readLine("", name, sizeof(name));
             printf(BLUE "New surname (optional, in such case leave blank): " RESET);
-            read_line("", surname, sizeof(surname));
-            // printf(VIOLET "New phone (optional, in such case leave blank): " RESET);
-            read_line("huhehuhue", phone, sizeof(phone));
-            printf("to som%s", phone);
+            readLine("", surname, sizeof(surname));
+            printf(VIOLET "New phone (optional, in such case leave blank): " RESET);
+            readLine("", phone, sizeof(phone));
             CLEdit(id, name, surname, phone, custList);
             break;
         }
@@ -93,6 +93,7 @@ void handleCustomerMenu(CustomerList_t *custList)
             int id;
             printf(RED "ID customers to delete: " RESET);
             scanf("%d", &id);
+            flushStdin();
             CLDelete(id, custList);
             break;
         }
@@ -114,34 +115,38 @@ void handleCustomerMenu(CustomerList_t *custList)
 void handleTariffMenu(TariffList_t *tariffList)
 {
     int choice, id;
-    char name[MAX_NAME];
+    char name[MAX_NAME] = {'\0'};
     double price;
     do {
         printTariffMenu();
         scanf("%d", &choice);
-        flush_stdin();
+        flushStdin();
         switch (choice) {
         case 1: { // insert tariff
             printf(GREEN "Name: " RESET);
-            read_line("", name, sizeof(name));
+            readLine("", name, sizeof(name));
             printf(BLUE "Price: " RESET);
             scanf("%lf", &price);
+            flushStdin();
             TLInsert(-1, name, price, tariffList);
             break;
         }
         case 2: { // edit tariff
             printf(ORANGE "ID tariff: " RESET);
             scanf("%d", &id);
+            flushStdin();
             printf(GREEN "New name: (optional) " RESET);
-            read_line("", name, sizeof(name));
+            readLine("", name, sizeof(name));
             printf(BLUE "New price: (if wanted to be kept as original, type -1) " RESET);
             scanf("%lf", &price);
+            flushStdin();
             TLEdit(id, name, price, tariffList);
             break;
         }
         case 3: { // delete tariff
             printf(RED "ID tariff to delete: " RESET);
             scanf("%d", &id);
+            flushStdin();
             TLDelete(id, tariffList);
             break;
         }
@@ -166,27 +171,32 @@ void handleAssignmentMenu(CustomerList_t *custList, TariffList_t *tariffList)
     do {
         printAssignmentMenu();
         scanf("%d", &choice);
-        flush_stdin();
+        flushStdin();
         switch (choice) {
         case 1: { // assign tariff
             printf(GREEN "ID customer: " RESET);
             scanf("%d", &custId);
+            flushStdin();
             printf(BLUE "ID tariff: " RESET);
             scanf("%d", &tariffId);
+            flushStdin();
             assignTariff(tariffId, custId, tariffList, custList);
             break;
         }
         case 2: { // unassign tariff
             printf(ORANGE "ID customer: " RESET);
             scanf("%d", &custId);
+            flushStdin();
             printf(VIOLET "ID tariff: " RESET);
             scanf("%d", &tariffId);
+            flushStdin();
             unassignTariff(tariffId, custId, tariffList, custList);
             break;
         }
         case 3: { // print customer's tariffs
             printf(YELLOW "ID customer: " RESET);
             scanf("%d", &custId);
+            flushStdin();
             printAssignedTariffs(custId, custList);
             break;
         }
@@ -210,7 +220,7 @@ int main()
     do {
         printMainMenu();
         scanf("%d", &choice);
-        flush_stdin();
+        flushStdin();
         switch (choice) {
         case 1: {
             handleCustomerMenu(custList);

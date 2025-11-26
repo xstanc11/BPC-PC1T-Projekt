@@ -209,23 +209,25 @@ void deleteFamilyPlan(int family_id)
 void handleFamilyMenu(CustomerList_t* custList, TariffList_t* tariffList)
 {
 	int choice;
-	char name[MAX_NAME];
+	char name[MAX_NAME] = {'\0'};
 	int family_id, customer_id, tariff_id;
 	double discount;
 
 	do {
 		printFamilyMenu();
 		scanf("%d", &choice);
-		flush_stdin();
+		flushStdin();
 
 		switch (choice) {
 		case 1: {
 			printf(BLUE"Family plan name: "RESET);
-			read_line("", name, sizeof(name));
+			readLine("", name, sizeof(name));
 			printf(INDIGO"Tariff ID: "RESET);
 			scanf("%d", &tariff_id);
+			flushStdin();
 			printf(RED"Discount percentage (0-50): "RESET);
 			scanf("%lf", &discount);
+			flushStdin();
 
 			if (discount < 0 || discount > 50) {
 				printf(ORANGE"Invalid discount! Using 10%%"RESET"\n");
@@ -238,16 +240,20 @@ void handleFamilyMenu(CustomerList_t* custList, TariffList_t* tariffList)
 		case 2: {
 			printf(YELLOW"Family plan ID: "RESET);
 			scanf("%d", &family_id);
+			flushStdin();
 			printf(GREEN"Customer ID to add: "RESET);
 			scanf("%d", &customer_id);
+			flushStdin();
 			addCustomerToFamily(family_id, customer_id);
 			break;
 		}
 		case 3: {
 			printf(BLUE"Family plan ID: "RESET);
 			scanf("%d", &family_id);
+			flushStdin();
 			printf(INDIGO"Customer ID to remove: "RESET);
 			scanf("%d", &customer_id);
+			flushStdin();
 			removeCustomerFromFamily(family_id, customer_id);
 			break;
 		}
@@ -258,12 +264,14 @@ void handleFamilyMenu(CustomerList_t* custList, TariffList_t* tariffList)
 		case 5: {
 			printf(RED"Family plan ID: "RESET);
 			scanf("%d", &family_id);
+			flushStdin();
 			showFamilyDetails(family_id, custList, tariffList);
 			break;
 		}
 		case 6: {
 			printf(ORANGE"Family plan ID to delete: "RESET);
 			scanf("%d", &family_id);
+			flushStdin();
 			deleteFamilyPlan(family_id);
 			break;
 		}
