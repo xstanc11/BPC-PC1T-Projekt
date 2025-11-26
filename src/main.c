@@ -4,12 +4,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "customer.h"
 #include "tariff.h"
 #include "util.h"
-#include "main.h"
+// #include "main.h"
 #include "familyTariff.h"
-
 
 void printMainMenu()
 {
@@ -54,7 +54,7 @@ void printAssignmentMenu()
     printf(INDIGO "Choice: " RESET);
 }
 
-void handleCustomerMenu(CustomerList_t* custList)
+void handleCustomerMenu(CustomerList_t *custList)
 {
     int choice, id;
     char name[MAX_NAME], surname[MAX_NAME], phone[MAX_PHONE], fullName[2 * MAX_NAME];
@@ -104,13 +104,13 @@ void handleCustomerMenu(CustomerList_t* custList)
             break;
         }
         default: {
-            printf(RED "Invalid choice!" RESET);
+            printf(RED "Invalid choice!" RESET "\n");
         }
         }
     } while (choice != 0);
 }
 
-void handleTariffMenu(TariffList_t* tariffList)
+void handleTariffMenu(TariffList_t *tariffList)
 {
     int choice, id;
     char name[MAX_NAME];
@@ -153,13 +153,13 @@ void handleTariffMenu(TariffList_t* tariffList)
             break;
         }
         default: {
-            printf(RED "Invalid choice!" RESET);
+            printf(RED "Invalid choice!" RESET "\n");
         }
         }
     } while (choice != 0);
 }
 
-void handleAssignmentMenu(CustomerList_t* custList, TariffList_t* tariffList)
+void handleAssignmentMenu(CustomerList_t *custList, TariffList_t *tariffList)
 {
     int choice, custId, tariffId;
     do {
@@ -194,7 +194,7 @@ void handleAssignmentMenu(CustomerList_t* custList, TariffList_t* tariffList)
             break;
         }
         default: {
-            printf(RED "Invalid choice!" RESET);
+            printf(RED "Invalid choice!" RESET "\n");
         }
         }
     } while (choice != 0);
@@ -227,11 +227,11 @@ int main()
             break;
         }
         case 0: {
-            printf(VIOLET "Ending program..." RESET);
+            printf(VIOLET "Ending program..." RESET "\n");
             break;
         }
         default: {
-            printf(RED "Invalid choice!" RESET);
+            printf(RED "Invalid choice!" RESET "\n");
         }
         }
     } while (choice != 0);

@@ -8,7 +8,6 @@
 #include "main.h"
 #include "customer.h"
 #include "tariff.h"
-#include "util.h"
 #include "familyTariff.h"
 
 // Global family plan list

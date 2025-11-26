@@ -6,7 +6,7 @@
 #include <string.h>
 
 #include "customer.h"
-#include "util.h"
+// #include "util.h"
 
 int NextCustID = 0;
 

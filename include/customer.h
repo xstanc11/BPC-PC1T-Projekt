@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "main.h" // max size definitions
 #include "tariff.h"
+#include "util.h"
 
 typedef struct Customer {
     int id;

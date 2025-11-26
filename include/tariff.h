@@ -3,7 +3,8 @@
 
 #pragma once
 
-#include "main.h" // max size definitions
+#include "main.h"
+#include "util.h"
 
 typedef struct Tariff {
     int id;

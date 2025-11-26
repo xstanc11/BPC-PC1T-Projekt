@@ -8,11 +8,11 @@ set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_C_FLAGS_DEBUG -g3)
 
 set(SOURCES
-  src/main.c
   src/util.c
   src/customer.c
   src/tariff.c
   src/familyTariff.c
+  src/main.c
 )
 
 add_executable(main ${SOURCES})
