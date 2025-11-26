@@ -242,6 +242,8 @@ int main()
     freeFamilyPlans(); // Clean up family plans
     free(custList);
     free(tariffList);
-    // closeFile();
+
+    saveFile(tariffList, custList);
+
     return 0;
 }

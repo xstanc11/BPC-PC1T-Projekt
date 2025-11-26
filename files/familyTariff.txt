@@ -1,0 +1,24 @@
+0;Neomezene xxl pro 5 clenu(30%discount);4550
+1;Neomezene xxl pro 4 cleny(25%discount);4875
+2;Neomezene xxl pro 3 cleny(20%discount);5200
+3;Neomezene xxl pro 2 cleny(10%discount);5850
+4;Neomezene xl pro 5 clenu(30%discount);3500
+5;Neomezene xl pro 4 cleny(25%discount);3750
+6;Neomezene xl pro 3 cleny(20%discount);4000
+7;Neomezene xl pro 2 cleny(10%discount);4500
+8;Neomezene pro 5 clenu(30%discount);2450
+9;Neomezene pro 4 cleny(25%discount);2625
+10;Neomezene pro 3 cleny(20%discount);2800
+11;Neomezene pro 2 cleny(10%discount);3150
+12;10Gb pro 5 clenu(30%discount);700
+13;10Gb pro 4 cleny(25%discount);750
+14;10Gb pro 3 cleny(20%discount);800
+15;10Gb pro 2 cleny(10%discount);900
+16;20Gb pro 5 clenu(30%discount);1400
+17;20Gb pro 4 cleny(25%discount);1500
+18;20Gb pro 3 cleny(20%discount);1600
+19;20Gb pro 2 cleny(10%discount);1800
+20;30Gb pro 5 clenu(30%discount);2100
+21;30Gb pro 4 cleny(25%discount);2250
+22;30Gb pro 3 cleny(20%discount);2400
+23;30Gb pro 2 cleny(10%discount);2700

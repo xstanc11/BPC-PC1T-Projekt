@@ -6,7 +6,7 @@
 #include <string.h>
 
 #include "customer.h"
-// #include "util.h"
+#include "util.h"
 
 int NextCustID = 0;
 
@@ -128,7 +128,7 @@ void CLInsert(int id, char *fullName, char *phone, TariffList_t *tariffs, Custom
     splitName(fullName, name, surname);
 
     if (CLFindCustomerByName(name, surname, list->first)) {
-        printf(ORANGE"Customer with name %s %s already exists\n"RESET", name, surname");
+        printf(ORANGE "Customer with name %s %s already exists" RESET "\n", name, surname);
         return;
     } else if (CLFindCustomerByPhone(phone, list->first)) {
         printf(YELLOW"Customer with number %s already exists"RESET"\n", phone);
