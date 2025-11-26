@@ -112,7 +112,7 @@ void saveFile(int machine, TariffList_t *tariffList, CustomerList_t *customerLis
     if (machine == LINUX)
         f = fopen("../files/tariff.txt", "w");
     else
-        f = fopen("../../../files/tariff.txt", "r");
+        f = fopen("../../../files/tariff.txt", "w");
 
 
     if (!f) {
@@ -132,7 +132,7 @@ void saveFile(int machine, TariffList_t *tariffList, CustomerList_t *customerLis
     if (machine == LINUX)
         f = fopen("../files/customer.txt", "w");
     else
-        f = fopen("../../../files/tariff.txt", "r");
+        f = fopen("../../../files/customer.txt", "w");
 
     if (!f) {
         fprintf(stderr, RED"Unable to open customer.txt\n"RESET);
