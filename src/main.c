@@ -83,8 +83,9 @@ void handleCustomerMenu(CustomerList_t *custList)
             read_line("", name, sizeof(name));
             printf(BLUE "New surname (optional, in such case leave blank): " RESET);
             read_line("", surname, sizeof(surname));
-            printf(VIOLET "New phone (optional, in such case leave blank): " RESET);
-            read_line("", phone, sizeof(phone));
+            // printf(VIOLET "New phone (optional, in such case leave blank): " RESET);
+            read_line("huhehuhue", phone, sizeof(phone));
+            printf("to som%s", phone);
             CLEdit(id, name, surname, phone, custList);
             break;
         }
