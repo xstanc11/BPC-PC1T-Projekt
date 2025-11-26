@@ -22,9 +22,9 @@ void flushStdin()
  * Reads from stdin and stores in buffer
  * @param buff Pointer to buffer
  */
-void readLine(char *buff)
+void readLine(char *buff, size_t size)
 {
-    if (fgets(buff, sizeof(buff), stdin) == NULL) {
+    if (fgets(buff, (int)size, stdin) == NULL) {
         buff[0] = '\0';
         return;
     }

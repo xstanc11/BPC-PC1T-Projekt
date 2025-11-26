@@ -3,7 +3,7 @@
 
 #pragma once
 
-#define MAX_NAME 100
+#define MAX_NAME 200
 #define MAX_PHONE 32
 #define LINE_BUF 256
 
@@ -18,6 +18,6 @@
 
 void flushStdin();
 
-void readLine(char *);
+void readLine(char *, size_t);
 
 void splitName(char *, char *, char *);

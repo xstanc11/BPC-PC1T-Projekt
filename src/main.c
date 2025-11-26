@@ -65,11 +65,11 @@ void handleCustomerMenu(CustomerList_t *custList)
         switch (choice) {
         case 1: { // insert customer
             printf(GREEN "Name: " RESET);
-            readLine(name);
+            readLine(name, sizeof(name));
             printf(BLUE "Surname: " RESET);
-            readLine(surname);
+            readLine(surname, sizeof(surname));
             printf(VIOLET "Phone: " RESET);
-            readLine(phone);
+            readLine(phone, sizeof(phone));
             strncpy(fullName, name, sizeof(name));
             strcat(fullName, " ");
             strcat(fullName, surname);
@@ -81,11 +81,11 @@ void handleCustomerMenu(CustomerList_t *custList)
             scanf("%d", &id);
             flushStdin();
             printf(GREEN "New name (optional, in such case leave blank): " RESET);
-            readLine(name);
+            readLine(name, sizeof(name));
             printf(BLUE "New surname (optional, in such case leave blank): " RESET);
-            readLine(surname);
+            readLine(surname, sizeof(surname));
             printf(VIOLET "New phone (optional, in such case leave blank): " RESET);
-            readLine(phone);
+            readLine(phone, sizeof(phone));
             CLEdit(id, name, surname, phone, custList);
             break;
         }
@@ -124,7 +124,7 @@ void handleTariffMenu(TariffList_t *tariffList)
         switch (choice) {
         case 1: { // insert tariff
             printf(GREEN "Name: " RESET);
-            readLine(name);
+            readLine(name, sizeof(name));
             printf(BLUE "Price: " RESET);
             scanf("%lf", &price);
             flushStdin();
@@ -136,7 +136,7 @@ void handleTariffMenu(TariffList_t *tariffList)
             scanf("%d", &id);
             flushStdin();
             printf(GREEN "New name: (optional) " RESET);
-            readLine(name);
+            readLine(name, sizeof(name));
             printf(BLUE "New price: (if wanted to be kept as original, type -1) " RESET);
             scanf("%lf", &price);
             flushStdin();
