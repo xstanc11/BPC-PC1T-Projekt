@@ -1,3 +1,6 @@
+// BPC-PC1T 2025 Project
+// @authors Šimon Čada, Rastislav Samuel Stanček
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -5,22 +8,11 @@
 #include "tariff.h"
 #include "util.h"
 #include "main.h"
+#include "familyTariff.h"
 
-// ANSI color codes for rainbow colors
-#define RED     "\033[31m"
-#define ORANGE  "\033[33m"
-#define YELLOW  "\033[93m"
-#define GREEN   "\033[32m"
-#define BLUE    "\033[34m"
-#define INDIGO  "\033[35m"
-#define VIOLET  "\033[95m"
-#define RESET   "\033[0m"
 
-// External function from familytarif.c
-extern void handleFamilyMenu(CustomerList_t* custList, TariffList_t* tariffList);
-extern void freeFamilyPlans();
-
-void printMainMenu() {
+void printMainMenu()
+{
     printf(RED "==== Main MENU ====" RESET "\n");
     printf(ORANGE "1) Customer Menu" RESET "\n");
     printf(YELLOW "2) Tariff Menu" RESET "\n");
@@ -30,7 +22,8 @@ void printMainMenu() {
     printf(VIOLET "Choice: " RESET);
 }
 
-void printCustomerMenu() {
+void printCustomerMenu()
+{
     printf(RED "==== Customer Menu ====" RESET "\n");
     printf(ORANGE "1) Add customer" RESET "\n");
     printf(YELLOW "2) Edit customer" RESET "\n");
@@ -40,7 +33,8 @@ void printCustomerMenu() {
     printf(VIOLET "Choice: " RESET);
 }
 
-void printTariffMenu() {
+void printTariffMenu()
+{
     printf(RED "==== Tariff Menu ====" RESET "\n");
     printf(ORANGE "1) Add tariff" RESET "\n");
     printf(YELLOW "2) Edit tariff" RESET "\n");
@@ -50,7 +44,8 @@ void printTariffMenu() {
     printf(VIOLET "Choice: " RESET);
 }
 
-void printAssignmentMenu() {
+void printAssignmentMenu()
+{
     printf(RED "==== Assignment Menu ====" RESET "\n");
     printf(ORANGE "1) Assign tariff to customer" RESET "\n");
     printf(YELLOW "2) Unassign tariff from customer" RESET "\n");
@@ -59,7 +54,8 @@ void printAssignmentMenu() {
     printf(INDIGO "Choice: " RESET);
 }
 
-void handleCustomerMenu(CustomerList_t* custList) {
+void handleCustomerMenu(CustomerList_t* custList)
+{
     int choice, id;
     char name[MAX_NAME], surname[MAX_NAME], phone[MAX_PHONE], fullName[2 * MAX_NAME];
     do {
@@ -114,7 +110,8 @@ void handleCustomerMenu(CustomerList_t* custList) {
     } while (choice != 0);
 }
 
-void handleTariffMenu(TariffList_t* tariffList) {
+void handleTariffMenu(TariffList_t* tariffList)
+{
     int choice, id;
     char name[MAX_NAME];
     double price;
@@ -162,7 +159,8 @@ void handleTariffMenu(TariffList_t* tariffList) {
     } while (choice != 0);
 }
 
-void handleAssignmentMenu(CustomerList_t* custList, TariffList_t* tariffList) {
+void handleAssignmentMenu(CustomerList_t* custList, TariffList_t* tariffList)
+{
     int choice, custId, tariffId;
     do {
         printAssignmentMenu();
@@ -202,7 +200,8 @@ void handleAssignmentMenu(CustomerList_t* custList, TariffList_t* tariffList) {
     } while (choice != 0);
 }
 
-int main() {
+int main()
+{
     CustomerList_t* custList = CLInit();
     TariffList_t* tariffList = TLInit();
     int choice;
@@ -242,5 +241,6 @@ int main() {
     freeFamilyPlans(); // Clean up family plans
     free(custList);
     free(tariffList);
+
     return 0;
 }

@@ -7,26 +7,20 @@
 #define MAX_PHONE 32
 #define LINE_BUF 256
 
-// /* Strukturka pro Tarif (globální seznam tarifů) */
-// typedef struct Tarif {
-//     int id;
-//     char name[MAX_NAME];
-//     double price;
-//     struct Tarif *next;
-// } Tarif;
+#define RED     "\033[31m"
+#define ORANGE  "\033[33m"
+#define YELLOW  "\033[93m"
+#define GREEN   "\033[32m"
+#define BLUE    "\033[34m"
+#define INDIGO  "\033[35m"
+#define VIOLET  "\033[95m"
+#define RESET   "\033[0m"
 
-// /* Pro každý zákazník: seznam přiřazených tarifů (ukazatele na Tarif) */
-// typedef struct CustTarifNode {
-//     Tarif *tarif; /* ukazatel na tarif v globálním seznamu */
-//     struct CustTarifNode *next;
-// } CustTarifNode;
+void printMainMenu();
+void printCustomerMenu();
+void printTariffMenu();
+void printAssignmentMenu();
 
-/* Rodinný tarif: kolekce zákazníků sdílející tarif (bonus) */
-// typedef struct FamilyPlan {
-//     int id;
-//     char name[MAX_NAME]; /* název rodinného plánu */
-//     // Tarif *tarif; /* tarif, který sdílí */
-//     // Customer **members; /* dynamické pole ukazatelů na členy (jednodušší implementace) */
-//     int member_count;
-//     struct FamilyPlan *next;
-// } FamilyPlan;
+void handleCustomerMenu(CustomerList_t*);
+void handleTariffMenu(TariffList_t*);
+void handleAssignmentMenu(CustomerList_t*, TariffList_t*);

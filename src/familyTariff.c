@@ -1,44 +1,22 @@
+// BPC-PC1T 2025 Project
+// @authors Šimon Čada, Rastislav Samuel Stanček
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_NAME 100
-#define RED     "\033[31m"
-#define ORANGE  "\033[33m"
-#define YELLOW  "\033[93m"
-#define GREEN   "\033[32m"
-#define BLUE    "\033[34m"
-#define INDIGO  "\033[35m"
-#define VIOLET  "\033[95m"
-#define RESET   "\033[0m"
-
-// Forward declarations for structures from main.c
-typedef struct Customer Customer;
-typedef struct Tariff Tariff;
-typedef struct CustomerList CustomerList_t;
-typedef struct TariffList TariffList_t;
-
-// Utility functions from main.c
-void flush_stdin(void);
-void read_line(const char* prompt, char* buf, size_t sz);
-
-// Family Plan structure
-typedef struct FamilyPlan {
-	int id;
-	char name[MAX_NAME];
-	int tariff_id;
-	int* customer_ids;
-	int customer_count;
-	int max_customers;
-	double discount_percentage;
-	struct FamilyPlan* next;
-} FamilyPlan;
+#include "main.h"
+#include "customer.h"
+#include "tariff.h"
+#include "util.h"
+#include "familyTariff.h"
 
 // Global family plan list
-FamilyPlan* family_head = NULL;
-int next_family_id = 1;
+FamilyPlan_t* family_head = NULL;
+int next_family_id = 0;
 
-void printFamilyMenu() {
+void printFamilyMenu()
+{
 	printf(RED"==== Family Plan Management ====R"RESET"\n");
 	printf(ORANGE"1) Create family plan"RESET"\n");
 	printf(YELLOW"2) Add customer to family"RESET"\n");
@@ -50,8 +28,9 @@ void printFamilyMenu() {
 	printf(ORANGE"Choice: ");
 }
 
-FamilyPlan* createFamilyPlan(const char* name, int tariff_id, double discount) {
-	FamilyPlan* plan = malloc(sizeof(FamilyPlan));
+FamilyPlan_t* createFamilyPlan(const char* name, int tariff_id, double discount)
+{
+	FamilyPlan_t* plan = malloc(sizeof(FamilyPlan_t));
 	if (!plan) {
 		printf(YELLOW"Memory allocation failed!"RESET"\n");
 		return NULL;
@@ -71,7 +50,7 @@ FamilyPlan* createFamilyPlan(const char* name, int tariff_id, double discount) {
 		family_head = plan;
 	}
 	else {
-		FamilyPlan* current = family_head;
+		FamilyPlan_t* current = family_head;
 		while (current->next) {
 			current = current->next;
 		}
@@ -82,8 +61,9 @@ FamilyPlan* createFamilyPlan(const char* name, int tariff_id, double discount) {
 	return plan;
 }
 
-void addCustomerToFamily(int family_id, int customer_id) {
-	FamilyPlan* plan = family_head;
+void addCustomerToFamily(int family_id, int customer_id)
+{
+	FamilyPlan_t* plan = family_head;
 	while (plan && plan->id != family_id) {
 		plan = plan->next;
 	}
@@ -115,8 +95,9 @@ void addCustomerToFamily(int family_id, int customer_id) {
 	printf(RED"Customer added to family plan successfully!"RESET"\n");
 }
 
-void removeCustomerFromFamily(int family_id, int customer_id) {
-	FamilyPlan* plan = family_head;
+void removeCustomerFromFamily(int family_id, int customer_id)
+{
+	FamilyPlan_t* plan = family_head;
 	while (plan && plan->id != family_id) {
 		plan = plan->next;
 	}
@@ -140,14 +121,15 @@ void removeCustomerFromFamily(int family_id, int customer_id) {
 	printf(GREEN"Customer not found in this family plan!"RESET"\n");
 }
 
-void listFamilyPlans() {
+void listFamilyPlans()
+{
 	if (!family_head) {
 		printf(BLUE"No family plans available."RESET"\n");
 		return;
 	}
 
 	printf(INDIGO"=== Family Plans ==="RESET"\n");
-	FamilyPlan* current = family_head;
+	FamilyPlan_t* current = family_head;
 	while (current) {
 		printf(RED"ID: %d | Name: %s | Tariff ID: %d | Members: %d | Discount: %.1f%%"RESET"\n",
 			current->id, current->name, current->tariff_id,
@@ -156,8 +138,9 @@ void listFamilyPlans() {
 	}
 }
 
-double calculateFamilyPrice(int family_id, TariffList_t* tariffList) {
-	FamilyPlan* plan = family_head;
+double calculateFamilyPrice(int family_id, TariffList_t* tariffList)
+{
+	FamilyPlan_t* plan = family_head;
 	while (plan && plan->id != family_id) {
 		plan = plan->next;
 	}
@@ -173,8 +156,9 @@ double calculateFamilyPrice(int family_id, TariffList_t* tariffList) {
 	return total_price - discount_amount;
 }
 
-void showFamilyDetails(int family_id, CustomerList_t* custList, TariffList_t* tariffList) {
-	FamilyPlan* plan = family_head;
+void showFamilyDetails(int family_id, CustomerList_t* custList, TariffList_t* tariffList)
+{
+	FamilyPlan_t* plan = family_head;
 	while (plan && plan->id != family_id) {
 		plan = plan->next;
 	}
@@ -197,9 +181,10 @@ void showFamilyDetails(int family_id, CustomerList_t* custList, TariffList_t* ta
 	}
 }
 
-void deleteFamilyPlan(int family_id) {
-	FamilyPlan* current = family_head;
-	FamilyPlan* prev = NULL;
+void deleteFamilyPlan(int family_id)
+{
+	FamilyPlan_t* current = family_head;
+	FamilyPlan_t* prev = NULL;
 
 	while (current && current->id != family_id) {
 		prev = current;
@@ -211,12 +196,10 @@ void deleteFamilyPlan(int family_id) {
 		return;
 	}
 
-	if (prev) {
+	if (prev)
 		prev->next = current->next;
-	}
-	else {
+	else
 		family_head = current->next;
-	}
 
 	free(current->customer_ids);
 	free(current);
@@ -224,7 +207,8 @@ void deleteFamilyPlan(int family_id) {
 	printf(GREEN"Family plan deleted successfully!"RESET"\n");
 }
 
-void handleFamilyMenu(CustomerList_t* custList, TariffList_t* tariffList) {
+void handleFamilyMenu(CustomerList_t* custList, TariffList_t* tariffList)
+{
 	int choice;
 	char name[MAX_NAME];
 	int family_id, customer_id, tariff_id;
@@ -295,10 +279,11 @@ void handleFamilyMenu(CustomerList_t* custList, TariffList_t* tariffList) {
 	} while (choice != 0);
 }
 
-void freeFamilyPlans() {
-	FamilyPlan* current = family_head;
+void freeFamilyPlans()
+{
+	FamilyPlan_t* current = family_head;
 	while (current) {
-		FamilyPlan* temp = current;
+		FamilyPlan_t* temp = current;
 		current = current->next;
 		free(temp->customer_ids);
 		free(temp);
