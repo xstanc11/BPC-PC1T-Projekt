@@ -105,13 +105,13 @@ void TLInsert(int id, char* name, double price, TariffList_t* list)
     prev = list->first;
 
     if (TLFindTariffByName(name, list->first)) {
-        printf("Tariff with name %s already exists\n", name);
+        printf(RED"Tariff with name %s already exists"RESET"\n", name);
         return;
     }
 
     new = malloc(sizeof(Tariff_t));
     if (!new) {
-        fprintf(stderr, "Memory allocation for tariff failed\n");
+        fprintf(stderr, ORANGE"Memory allocation for tariff failed"RESET"\n");
         exit(-1);
     }
     memset(new, 0, sizeof(Tariff_t));
@@ -161,7 +161,7 @@ void TLEdit(int id, char* name, double price, TariffList_t* list)
     double newPrice = 0.0;
 
     if (!tariff) {
-        printf("Wrong id (ID = %d), tariff not found\n", id);
+        printf(YELLOW"Wrong id (ID = %d), tariff not found"RESET"\n", id);
         return;
     }
 
@@ -182,13 +182,13 @@ void TLDelete(int id, TariffList_t* list)
 {
     Tariff_t* tariff = TLFindTariffByID(id, list->first);
     if (!tariff) {
-        printf("Wrong id (ID = %d), tariff not found\n", id);
+        printf(GREEN"Wrong id (ID = %d), tariff not found"RESET"\n", id);
         return;
     }
     TLFirst(list);
 
     if (!list->active) {
-        printf("There are no tariffs in the system\n");
+        printf(BLUE"There are no tariffs in the system"RESET"\n");
         return;
     }
 
@@ -216,7 +216,7 @@ void TLPrint(TariffList_t* list)
 {
     TLFirst(list);
     while (list->active) {
-        printf("ID: %d\nname: %s\nprice: %.2lfczk\n\n", list->active->id, list->active->name, list->active->price);
+        printf(INDIGO"ID: %d\nname: %s\nprice: %.2lfczk"RESET"\n\n", list->active->id, list->active->name, list->active->price);
         TLNext(list);
     }
 }

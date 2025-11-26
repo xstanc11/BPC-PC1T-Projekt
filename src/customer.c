@@ -19,7 +19,7 @@ CustomerList_t* CLInit()
     CustomerList_t *list = malloc(sizeof(CustomerList_t));
 
     if (!list) {
-        fprintf(stderr, "Memory allocation for customer list failed\n");
+        fprintf(stderr, RED"Memory allocation for customer list failed\n"RESET);
         exit(-1);
     }
 
@@ -128,16 +128,16 @@ void CLInsert(int id, char *fullName, char *phone, TariffList_t *tariffs, Custom
     splitName(fullName, name, surname);
 
     if (CLFindCustomerByName(name, surname, list->first)) {
-        printf("Customer with name %s %s already exists\n", name, surname);
+        printf(ORANGE"Customer with name %s %s already exists\n"RESET", name, surname");
         return;
     } else if (CLFindCustomerByPhone(phone, list->first)) {
-        printf("Customer with number %s already exists\n", phone);
+        printf(YELLOW"Customer with number %s already exists"RESET"\n", phone);
         return;
     }
 
     new = malloc(sizeof(Customer_t));
     if (!new) {
-        fprintf(stderr, "Memory allocation for customer failed\n");
+        fprintf(stderr, GREEN"Memory allocation for customer failed"RESET"\n");
         exit(-1);
     }
     memset(new, 0, sizeof(Customer_t));
@@ -191,7 +191,7 @@ void CLEdit(int id, char *name, char *surname, char *phone, CustomerList_t *list
     TariffList_t *oldList = customer->assignedTariffs;
 
     if (!customer) {
-        printf("Wrong id (ID = %d), customer not found\n", id);
+        printf(BLUE"Wrong id (ID = %d), customer not found"RESET"\n", id);
         return;
     }
 
@@ -218,13 +218,13 @@ void CLDelete(int id, CustomerList_t *list)
 {
     Customer_t *customer = CLFindCustomerByID(id, list->first);
     if (!customer) {
-        printf("Wrong id (ID = %d), customer not found\n", id);
+        printf(INDIGO"Wrong id (ID = %d), customer not found"RESET"\n", id);
         return;
     }
     CLFirst(list);
 
     if (!list->active) {
-        printf("There are no customers in the system\n");
+        printf(VIOLET"There are no customers in the system"RESET"\n");
         return;
     }
 
@@ -254,7 +254,7 @@ void CLPrint(CustomerList_t *list)
 {
     CLFirst(list);
     while (list->active) {
-        printf("ID: %d\nname: %s\nsurname: %s\nphone number: %s\n\n", list->active->id, list->active->name, list->active->surname, list->active->phone);
+        printf(RED"ID: %d\nname: %s\nsurname: %s\nphone number: %s"RESET"\n\n", list->active->id, list->active->name, list->active->surname, list->active->phone);
         CLNext(list);
     }
 }
@@ -272,14 +272,14 @@ void assignTariff(int tariffId, int customerId, TariffList_t *tariffList, Custom
     Tariff_t *tariff = TLFindTariffByID(tariffId, tariffList->first);
 
     if (!tariff) {
-        printf("Wrong id (ID = %d), tariff not found\n", tariffId);
+        printf(ORANGE"Wrong id (ID = %d), tariff not found"RESET"\n", tariffId);
         return;
     }
 
     Customer_t *customer = CLFindCustomerByID(customerId, customerList->first);
 
     if (!customer) {
-        printf("Wrong id (ID = %d), customer not found\n", customerId);
+        printf(YELLOW"Wrong id (ID = %d), customer not found"RESET"\n", customerId);
         return;
     }
 
@@ -287,7 +287,7 @@ void assignTariff(int tariffId, int customerId, TariffList_t *tariffList, Custom
         customer->assignedTariffs = TLInit(); // no need to check failed malloc, TLInit() already does that
     else {
         if (TLFindTariffByID(tariffId, customer->assignedTariffs->first)) {
-            printf("Customer already has this tariff (ID = %d) assigned\n", tariffId);
+            printf(GREEN"Customer already has this tariff (ID = %d) assigned"RESET"\n", tariffId);
             return;
         }
     }
@@ -307,19 +307,19 @@ void unassignTariff(int tariffId, int customerId, TariffList_t *tariffList, Cust
     Tariff_t *tariff = TLFindTariffByID(tariffId, tariffList->first);
 
     if (!tariff) {
-        printf("Wrong id (ID = %d), tariff not found\n", tariffId);
+        printf(GREEN"Wrong id (ID = %d), tariff not found"RESET"\n", tariffId);
         return;
     }
 
     Customer_t *customer = CLFindCustomerByID(customerId, customerList->first);
 
     if (!customer) {
-        printf("Wrong id (ID = %d), customer not found\n", customerId);
+        printf(BLUE"Wrong id (ID = %d), customer not found"RESET"\n", customerId);
         return;
     }
 
     if (!TLFindTariffByID(tariffId, customer->assignedTariffs->first)) {
-        printf("Customer doesn't have this tariff (ID = %d) assigned\n", tariffId);
+        printf(INDIGO"Customer doesn't have this tariff (ID = %d) assigned"RESET"\n", tariffId);
         return;
     }
 
@@ -336,20 +336,20 @@ void printAssignedTariffs(int id, CustomerList_t *list)
     Customer_t *customer = CLFindCustomerByID(id, list->first);
 
     if (!customer) {
-        printf("Wrong id (ID = %d), customer not found\n", id);
+        printf(VIOLET"Wrong id (ID = %d), customer not found\n"RESET"", id);
         return;
     }
 
     if (!customer->assignedTariffs) {
-        printf("Customer (ID = %d) has no tariffs assigned\n", customer->id);
+        printf(RED"Customer (ID = %d) has no tariffs assigned"RESET"\n", customer->id);
         return;
     }
 
     TLFirst(customer->assignedTariffs);
-    printf("Customer %s %s has the following tariffs assigned:\n", customer->name, customer->surname);
+    printf(ORANGE"Customer %s %s has the following tariffs assigned:"RESET"\n", customer->name, customer->surname);
 
     while (customer->assignedTariffs->active) {
-        printf("\tID: %d\n\tname: %s\n\tprice: %lf\n\n", customer->assignedTariffs->active->id, customer->assignedTariffs->active->name, customer->assignedTariffs->active->price);
+        printf(YELLOW"\tID: %d\n\tname: %s\n\tprice: %lf"RESET"\n\n", customer->assignedTariffs->active->id, customer->assignedTariffs->active->name, customer->assignedTariffs->active->price);
         TLNext(customer->assignedTariffs);
     }
 }
