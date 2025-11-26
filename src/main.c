@@ -237,13 +237,14 @@ int main()
         }
     } while (choice != 0);
 
+    saveFile(tariffList, custList);
+
     CLDispose(custList);
     TLDispose(tariffList);
     freeFamilyPlans(); // Clean up family plans
     free(custList);
     free(tariffList);
 
-    saveFile(tariffList, custList);
 
     return 0;
 }

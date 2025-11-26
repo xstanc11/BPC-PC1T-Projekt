@@ -78,7 +78,57 @@ void readFile(TariffList_t *tariffList, CustomerList_t *customerList)
     fclose(f);
 }
 
-void saveFile(TariffList_t *tarifList, CustomerList_t *customerList)
+void saveFile(TariffList_t *tariffList, CustomerList_t *customerList)
 {
+    Customer_t *customer;
+    Tariff_t *tariff, *assignedTariff;
+    FILE *f;
 
+    f = fopen("../files/tariff.txt", "w");
+
+    if (!f) {
+        fprintf(stderr, RED"Unable to open tariff.txt\n"RESET);
+        exit(-1);
+    }
+
+    TLFirst(tariffList);
+    while(tariffList->active) {
+        tariff = tariffList->active;
+        fprintf(f, "%d;%s;%.2lf\n", tariff->id, tariff->name, tariff->price);
+        TLNext(tariffList);
+    }
+
+    fclose(f);
+
+    f = fopen("../files/customer.txt", "w");
+    
+    if (!f) {
+        fprintf(stderr, RED"Unable to open customer.txt\n"RESET);
+        exit(-1);
+    }
+    
+    CLFirst(customerList);
+    while (customerList->active) {
+        customer = customerList->active;
+        fprintf(f, "%d;%s %s;%s;", customer->id, customer->name, customer->surname, customer->phone);
+
+        if (!customer->assignedTariffs)
+            fprintf(f, "-\n");
+        else {
+            TLFirst(customer->assignedTariffs);
+            while (customer->assignedTariffs->active) {
+                assignedTariff = customer->assignedTariffs->active;
+                fprintf(f, "%d", assignedTariff->id);
+                if (assignedTariff->next)
+                    fprintf(f, ",");
+                
+                TLNext(customer->assignedTariffs);
+            }
+            fprintf(f, "\n");
+        }
+
+        CLNext(customerList);
+    }
+
+    fclose(f);
 }
