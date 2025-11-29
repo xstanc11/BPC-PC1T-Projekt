@@ -12,288 +12,319 @@
 
 // Global family plan list
 FamilyPlan_t* family_head = NULL;
-int next_family_id = 0;
+int NextFamilyTariffID = 0;
 
-void printFamilyMenu()
+/**
+ * Initialize Family plan linked list
+ * @param list Pointer to family plan list
+ * @return Allocated pointer to head of family plan list
+ */
+FamilyPlanList_t* FPLInit()
 {
-	printf(RED"==== Family Plan Management ====R"RESET"\n");
-	printf(ORANGE"1) Create family plan"RESET"\n");
-	printf(YELLOW"2) Add customer to family"RESET"\n");
-	printf(GREEN"3) Remove customer from family"RESET"\n");
-	printf(BLUE"4) List all family plans"RESET"\n");
-	printf(INDIGO"5) Show family plan details"RESET"\n");
-	printf(VIOLET"6) Delete family plan"RESET"\n");
-	printf(RED"0) Back to main menu"RESET"\n");
-	printf(ORANGE"Choice: ");
+    FamilyPlanList_t *list = malloc(sizeof(FamilyPlanList_t));
+
+    if (!list) {
+        fprintf(stderr, RED"Memory allocation for family tariff list failed\n"RESET);
+        exit(-1);
+    }
+
+    list->active = NULL;
+    list->first = NULL;
+
+    return list;
 }
 
-FamilyPlan_t* createFamilyPlan(const char* name, int tariff_id, double discount)
+/**
+ * Free all allocated nodes
+ * @param list Pointer to family plan list
+ */
+void FPLDispose(FamilyPlanList_t *list)
 {
-	FamilyPlan_t* plan = malloc(sizeof(FamilyPlan_t));
-	if (!plan) {
-		printf(YELLOW"Memory allocation failed!"RESET"\n");
-		return NULL;
-	}
-
-	plan->id = next_family_id++;
-	strncpy(plan->name, name, MAX_NAME - 1);
-	plan->name[MAX_NAME - 1] = '\0';
-	plan->tariff_id = tariff_id;
-	plan->customer_ids = malloc(sizeof(int) * 10);
-	plan->customer_count = 0;
-	plan->max_customers = 10;
-	plan->discount_percentage = discount;
-	plan->next = NULL;
-
-	if (!family_head) {
-		family_head = plan;
-	}
-	else {
-		FamilyPlan_t* current = family_head;
-		while (current->next) {
-			current = current->next;
-		}
-		current->next = plan;
-	}
-
-	printf(GREEN"Family plan created successfully! ID: %d"RESET"\n", plan->id);
-	return plan;
+    FPLFirst(list);
+    while (list->active) {
+        FamilyPlan_t *curr = list->active;
+        FPLNext(list);
+        free(curr);
+    }
 }
 
-void addCustomerToFamily(int family_id, int customer_id)
+/**
+ * Get first family tariff
+ * @param list Pointer to family plan list
+ */
+void FPLFirst(FamilyPlanList_t *list)
 {
-	FamilyPlan_t* plan = family_head;
-	while (plan && plan->id != family_id) {
-		plan = plan->next;
-	}
-
-	if (!plan) {
-		printf(BLUE"Family plan not found!"RESET"\n");
-		return;
-	}
-
-	for (int i = 0; i < plan->customer_count; i++) {
-		if (plan->customer_ids[i] == customer_id) {
-			printf(INDIGO"Customer already in this family plan!"RESET"\n");
-			return;
-		}
-	}
-
-	if (plan->customer_count >= plan->max_customers) {
-		plan->max_customers *= 2;
-		plan->customer_ids = realloc(plan->customer_ids, sizeof(int) * plan->max_customers);
-		if (!plan->customer_ids) {
-			printf(VIOLET"Memory reallocation failed!"RESET"\n");
-			return;
-		}
-	}
-
-	plan->customer_ids[plan->customer_count] = customer_id;
-	plan->customer_count++;
-
-	printf(RED"Customer added to family plan successfully!"RESET"\n");
+    list->active = list->first;
 }
 
-void removeCustomerFromFamily(int family_id, int customer_id)
+/**
+ * Get next family plan in list
+ * @param list Pointer to family plan list
+ */
+void FPLNext(FamilyPlanList_t *list)
 {
-	FamilyPlan_t* plan = family_head;
-	while (plan && plan->id != family_id) {
-		plan = plan->next;
-	}
-
-	if (!plan) {
-		printf(ORANGE"Family plan not found!"RESET"\n");
-		return;
-	}
-
-	for (int i = 0; i < plan->customer_count; i++) {
-		if (plan->customer_ids[i] == customer_id) {
-			for (int j = i; j < plan->customer_count - 1; j++) {
-				plan->customer_ids[j] = plan->customer_ids[j + 1];
-			}
-			plan->customer_count--;
-			printf(YELLOW"Customer removed from family plan!"RESET"\n");
-			return;
-		}
-	}
-
-	printf(GREEN"Customer not found in this family plan!"RESET"\n");
+    list->active = list->active->next;
 }
 
-void listFamilyPlans()
+/**
+ * Returns family plan if ID matches
+ * @param name Query ID
+ * @param customer Pointer to family plan
+ * @return Family plan if found, otherwise NULL
+ */
+FamilyPlan_t* FPLFindPlanByID(int id, FamilyPlan_t *familyPlan)
 {
-	if (!family_head) {
-		printf(BLUE"No family plans available."RESET"\n");
-		return;
-	}
-
-	printf(INDIGO"=== Family Plans ==="RESET"\n");
-	FamilyPlan_t* current = family_head;
-	while (current) {
-		printf(RED"ID: %d | Name: %s | Tariff ID: %d | Members: %d | Discount: %.1f%%"RESET"\n",
-			current->id, current->name, current->tariff_id,
-			current->customer_count, current->discount_percentage);
-		current = current->next;
-	}
+    if (!familyPlan)
+        return NULL;
+    if (familyPlan->id == id)
+        return familyPlan;
+    else
+        FPLFindPlanByID(id, familyPlan->next);
 }
 
-double calculateFamilyPrice(int family_id, TariffList_t* tariffList)
+/**
+ * Insert a family plan into the family plan list
+ * Insert new family plans with id == -1 to ensure correct functioning of FPLEdit()
+ * @param name Family plan name
+ * @param maxCustomers Maximum number of assignable customers
+ * @param price Family plan price
+ * @param customers Pointer to a list of customers
+ * @param list Pointer to family plan list
+ */
+void FPLInsert(int id, char *name, int maxCustomers, double price, CustomerList_t *customers, FamilyPlanList_t *list)
 {
-	FamilyPlan_t* plan = family_head;
-	while (plan && plan->id != family_id) {
-		plan = plan->next;
-	}
+	FamilyPlan_t *prev, *new;
+	prev = list->first;
 
-	if (!plan || plan->customer_count == 0) {
-		return 0.0;
-	}
+    if (FPLFindPlanByID(id, list->first)) {
+        printf(RED"Family plan with name %s already exists"RESET"\n", name);
+        return;
+    }
 
-	double base_price = 20.0;
-	double total_price = base_price * plan->customer_count;
-	double discount_amount = total_price * (plan->discount_percentage / 100.0);
+	new = malloc(sizeof(FamilyPlan_t));
+	if (!new) {
+        fprintf(stderr, ORANGE"Memory allocation for family plan failed"RESET"\n");
+        exit(-1);
+    }
+    memset(new, 0, sizeof(FamilyPlan_t));
 
-	return total_price - discount_amount;
-}
-
-void showFamilyDetails(int family_id, CustomerList_t* custList, TariffList_t* tariffList)
-{
-	FamilyPlan_t* plan = family_head;
-	while (plan && plan->id != family_id) {
-		plan = plan->next;
-	}
-
-	if (!plan) {
-		printf(ORANGE"Family plan not found!"RESET"\n");
-		return;
-	}
-
-	printf(RED"=== Family Plan Details ==="RESET"\n");
-	printf(ORANGE"ID: %d"RESET"\n", plan->id);
-	printf(YELLOW"Name: %s"RESET"\n", plan->name);
-	printf(GREEN"Tariff ID: %d"RESET"\n", plan->tariff_id);
-	printf(BLUE"Discount: %.1f%%"RESET"\n", plan->discount_percentage);
-	printf(INDIGO"Total Price: %.2f"RESET"\n", calculateFamilyPrice(family_id, tariffList));
-
-	printf(RED"Members (%d):"RESET"\n", plan->customer_count);
-	for (int i = 0; i < plan->customer_count; i++) {
-		printf(ORANGE"  - Customer ID: %d"RESET"\n", plan->customer_ids[i]);
-	}
-}
-
-void deleteFamilyPlan(int family_id)
-{
-	FamilyPlan_t* current = family_head;
-	FamilyPlan_t* prev = NULL;
-
-	while (current && current->id != family_id) {
-		prev = current;
-		current = current->next;
-	}
-
-	if (!current) {
-		printf(YELLOW"Family plan not found!"RESET"\n");
-		return;
-	}
-
-	if (prev)
-		prev->next = current->next;
+	if (id == -1)
+		new->id = NextFamilyTariffID++;
 	else
-		family_head = current->next;
+		new->id = id;
 
-	free(current->customer_ids);
-	free(current);
+	strncpy(new->name, name, strlen(name));
+	new->assignedCustomers = customers;
+	new->maxCustomers = maxCustomers;
+	new->price = price;
 
-	printf(GREEN"Family plan deleted successfully!"RESET"\n");
-}
+	FPLFirst(list);
 
-void handleFamilyMenu(CustomerList_t* custList, TariffList_t* tariffList)
-{
-	int choice;
-	char name[MAX_NAME] = {'\0'};
-	int family_id, customer_id, tariff_id;
-	double discount;
+	if (!list->active) { // empty list
+		new->next = NULL;
+		list->first = new;
+		list->active = new;
+	} else if (new->id < list->active->id) { // insert as first
+		new->next = list->first;
+		list->first = new;
+		list->active = new;
+	} else {
+		while (list->active && new->id > list->active->id) {
+			prev = list->active;
+			FPLNext(list);
+		}
 
-	do {
-		printFamilyMenu();
-		scanf("%d", &choice);
-		flushStdin();
-
-		switch (choice) {
-		case 1: {
-			printf(BLUE"Family plan name: "RESET);
-			readLine(name, sizeof(name));
-			printf(INDIGO"Tariff ID: "RESET);
-			scanf("%d", &tariff_id);
-			flushStdin();
-			printf(RED"Discount percentage (0-50): "RESET);
-			scanf("%lf", &discount);
-			flushStdin();
-
-			if (discount < 0 || discount > 50) {
-				printf(ORANGE"Invalid discount! Using 10%%"RESET"\n");
-				discount = 10.0;
-			}
-
-			createFamilyPlan(name, tariff_id, discount);
-			break;
-		}
-		case 2: {
-			printf(YELLOW"Family plan ID: "RESET);
-			scanf("%d", &family_id);
-			flushStdin();
-			printf(GREEN"Customer ID to add: "RESET);
-			scanf("%d", &customer_id);
-			flushStdin();
-			addCustomerToFamily(family_id, customer_id);
-			break;
-		}
-		case 3: {
-			printf(BLUE"Family plan ID: "RESET);
-			scanf("%d", &family_id);
-			flushStdin();
-			printf(INDIGO"Customer ID to remove: "RESET);
-			scanf("%d", &customer_id);
-			flushStdin();
-			removeCustomerFromFamily(family_id, customer_id);
-			break;
-		}
-		case 4: {
-			listFamilyPlans();
-			break;
-		}
-		case 5: {
-			printf(RED"Family plan ID: "RESET);
-			scanf("%d", &family_id);
-			flushStdin();
-			showFamilyDetails(family_id, custList, tariffList);
-			break;
-		}
-		case 6: {
-			printf(ORANGE"Family plan ID to delete: "RESET);
-			scanf("%d", &family_id);
-			flushStdin();
-			deleteFamilyPlan(family_id);
-			break;
-		}
-		case 0: {
-			printf(YELLOW"Returning to main menu..."RESET"\n");
-			break;
-		}
-		default: {
-			printf(GREEN"Invalid choice!"RESET"\n");
-		}
-		}
-	} while (choice != 0);
-}
-
-void freeFamilyPlans()
-{
-	FamilyPlan_t* current = family_head;
-	while (current) {
-		FamilyPlan_t* temp = current;
-		current = current->next;
-		free(temp->customer_ids);
-		free(temp);
+		prev->next = new;
+		new->next = list->active;
+		list->active = new;
 	}
-	family_head = NULL;
+}
+
+/**
+ * Edit a family plan by ID
+ * @param id Family plan ID
+ * @param name New family plan name (optional)
+ * @param maxCustomers New maximum number of assignable customers (optional, -1 if wanted to be kept original)
+ * @param price New tariff price (optional, -1 if wanted to be kept original)
+ */
+void FPLEdit(int id, char *name, int maxCustomers, double price, FamilyPlanList_t *list)
+{
+	FamilyPlan_t *plan = FPLFindPlanByID(id, list->first);
+	char newName[MAX_NAME] = {'\0'};
+	int newMax = 0;
+	double newPrice = 0.0;
+	CustomerList_t *oldList = plan->assignedCustomers;
+
+	if (!plan) {
+		printf(YELLOW"Wrong id (ID = %d), family plan not found"RESET"\n", id);
+        return;
+	}
+
+	(name[0] != '\0') ? strncpy(newName, name, MAX_NAME - 1) : strncpy(newName, plan->name, MAX_NAME - 1);
+    newName[MAX_NAME - 1] = '\0';
+	(maxCustomers != -1) ? (newMax = maxCustomers) : (newPrice = plan->price);
+	(price != -1) ? (newPrice = price) : (newPrice = plan->price);
+
+	FPLDelete(plan->id, list);
+	FPLInsert(id, newName, newMax, newPrice, oldList, list);
+}
+
+/**
+ * Delete a family plan by ID
+ * @param id Family plan ID
+ * @param list Pointer to family plan list
+ */
+void FPLDelete(int id, FamilyPlanList_t *list)
+{
+    FamilyPlan_t *plan = FPLFindPlanByID(id, list->first);
+    if (!plan) {
+        printf(GREEN"Wrong id (ID = %d), family plan not found"RESET"\n", id);
+        return;
+    }
+    FPLFirst(list);
+
+    if (!list->active) {
+        printf(BLUE"There are no tariffs in the system"RESET"\n");
+        return;
+    }
+
+    if (list->first == plan) {
+        list->first = plan->next;
+		if (plan->assignedCustomers != NULL) {
+			CLDispose(plan->assignedCustomers);
+			free(plan->assignedCustomers);
+		}
+        free(plan);
+        return;
+    }
+
+    while (list->active) {
+        if (list->active->next == plan)
+            break;
+        FPLNext(list);
+    }
+
+    list->active->next = plan->next;
+	if (plan->assignedCustomers != NULL) {
+		CLDispose(plan->assignedCustomers);
+		free(plan->assignedCustomers);
+	}
+    free(plan);
+}
+
+/**
+ * Print family plans
+ * @param list Pointer to family plan list
+ */
+void FPLPrint(FamilyPlanList_t *list)
+{
+	FamilyPlan_t *curr;
+	FPLFirst(list);
+	while (list->active) {
+		curr = list->active;
+		printf(RED "ID: %d\nname: %s\nmaximum number of assignable customers: %d\nnumber of currently assigned customers: %d\nprice: %lf\n" RESET, curr->id, curr->name, curr->maxCustomers, curr->customerCount, curr->price);
+		FPLNext(list);
+	}
+}
+
+/**
+ * Assign customer to family plan
+ * @param customerId ID customer to be assigned
+ * @param familyPlanId ID of assignee family plan
+ * @param customerList List of available customers
+ * @param familyPlanList List of registered family plans
+ */
+void assignCustomer(int customerId, int familyPlanId, CustomerList_t *customerList, FamilyPlanList_t *familyPlanList)
+{
+	Customer_t *customer = CLFindCustomerByID(customerId, customerList->first);
+
+	if (!customer) {
+        printf(ORANGE"Wrong id (ID = %d), customer not found"RESET"\n", customerId);
+        return;
+	}
+
+	FamilyPlan_t *plan = FPLFindPlanByID(familyPlanId, familyPlanList->first);
+	
+	if (!plan) {
+		printf(YELLOW"Wrong id (ID = %d), family plan not found"RESET"\n", familyPlanId);
+		return;
+	}
+
+	if (!plan->assignedCustomers) // no assigned customers
+		plan->assignedCustomers = CLInit();
+	else {
+		if (CLFindCustomerByID(customerId, plan->assignedCustomers->first)) {
+            printf(GREEN"Family plan already has this customer (ID = %d) assigned"RESET"\n", customerId);
+            return;
+        }
+	}
+
+	CLInsert(customer->id, customer->name, customer->phone, customer->assignedTariffs, plan->assignedCustomers);
+}
+
+/**
+ * Assign customer to family plan
+ * @param customerId ID customer to be assigned
+ * @param familyPlanId ID of assignee family plan
+ * @param customerList List of available customers
+ * @param familyPlanList List of registered family plans
+ */
+void unAssignCustomer(int customerId, int familyPlanId, CustomerList_t *customerList, FamilyPlanList_t *familyPlanList)
+{
+	Customer_t *customer = CLFindCustomerByID(customerId, customerList->first);
+
+	if (!customer) {
+        printf(ORANGE"Wrong id (ID = %d), customer not found"RESET"\n", customerId);
+        return;
+	}
+
+	FamilyPlan_t *plan = FPLFindPlanByID(familyPlanId, familyPlanList->first);
+	
+	if (!plan) {
+		printf(YELLOW"Wrong id (ID = %d), family plan not found"RESET"\n", familyPlanId);
+		return;
+	}
+
+    if (!CLFindCustomerByID(customerId, plan->assignedCustomers->first)) {
+        printf(INDIGO"Family plan doesn't have this customer (ID = %d) assigned"RESET"\n", customerId);
+        return;
+    }
+
+    CLDelete(customer->id, plan->assignedCustomers);
+
+    if (!plan->assignedCustomers->first) { // if the customer was the last assigned
+        free(plan->assignedCustomers);
+        plan->assignedCustomers = NULL;
+    }
+}
+
+/**
+ * Print family plan's assigned customer
+ * @param id ID of family plan
+ * @param list List of registered family plans
+ */
+void printAssignedCustomers(int id, FamilyPlanList_t *list)
+{ 
+	FamilyPlan_t *plan = FPLFindPlanByID(id, list->first);
+
+    if (!plan) {
+        printf(VIOLET"Wrong id (ID = %d), family plan not found\n"RESET"", id);
+        return;
+    }
+
+    if (!plan->assignedCustomers) {
+        printf(RED"Family plan (ID = %d) has no customers assigned"RESET"\n", plan->id);
+        return;
+    }
+
+    CLFirst(plan->assignedCustomers);
+    printf(ORANGE"Family plan %s has the following customers assigned:"RESET"\n", plan->name);
+
+	Customer_t *curr;
+
+    while (plan->assignedCustomers->active) {
+		curr = plan->assignedCustomers->active;
+        printf(YELLOW"\tID: %d\n\tname: %s\n\tsurname: %s\n\tphone number: %s"RESET"\n\n", curr->id, curr->name, curr->surname, curr->phone);
+        CLNext(plan->assignedCustomers);
+    }
 }

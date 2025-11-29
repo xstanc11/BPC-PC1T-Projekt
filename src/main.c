@@ -54,6 +54,19 @@ void printAssignmentMenu()
     printf(INDIGO "Choice: " RESET);
 }
 
+void printFamilyMenu()
+{
+	printf(RED"==== Family Plan Management ====R"RESET"\n");
+	printf(ORANGE"1) Create family plan"RESET"\n");
+	printf(YELLOW"2) Add customer to family"RESET"\n");
+	printf(GREEN"3) Remove customer from family"RESET"\n");
+	printf(BLUE"4) List all family plans"RESET"\n");
+	printf(INDIGO"5) Show family plan details"RESET"\n");
+	printf(VIOLET"6) Delete family plan"RESET"\n");
+	printf(RED"0) Back to main menu"RESET"\n");
+	printf(ORANGE"Choice: ");
+}
+
 void handleCustomerMenu(CustomerList_t *custList)
 {
     int choice, id;
@@ -190,7 +203,7 @@ void handleAssignmentMenu(CustomerList_t *custList, TariffList_t *tariffList)
             printf(VIOLET "ID tariff: " RESET);
             scanf("%d", &tariffId);
             flushStdin();
-            unassignTariff(tariffId, custId, tariffList, custList);
+            unAssignTariff(tariffId, custId, tariffList, custList);
             break;
         }
         case 3: { // print customer's tariffs
@@ -209,6 +222,86 @@ void handleAssignmentMenu(CustomerList_t *custList, TariffList_t *tariffList)
         }
         }
     } while (choice != 0);
+}
+
+void handleFamilyMenu(CustomerList_t* custList, TariffList_t* tariffList)
+{
+	// int choice;
+	// char name[MAX_NAME] = {'\0'};
+	// int family_id, customer_id, tariff_id;
+	// double discount;
+
+	// do {
+	// 	printFamilyMenu();
+	// 	scanf("%d", &choice);
+	// 	flushStdin();
+
+	// 	switch (choice) {
+	// 	case 1: {
+	// 		printf(BLUE"Family plan name: "RESET);
+	// 		readLine(name, sizeof(name));
+	// 		printf(INDIGO"Tariff ID: "RESET);
+	// 		scanf("%d", &tariff_id);
+	// 		flushStdin();
+	// 		printf(RED"Discount percentage (0-50): "RESET);
+	// 		scanf("%lf", &discount);
+	// 		flushStdin();
+
+	// 		if (discount < 0 || discount > 50) {
+	// 			printf(ORANGE"Invalid discount! Using 10%%"RESET"\n");
+	// 			discount = 10.0;
+	// 		}
+
+	// 		createFamilyPlan(name, tariff_id, discount);
+	// 		break;
+	// 	}
+	// 	case 2: {
+	// 		printf(YELLOW"Family plan ID: "RESET);
+	// 		scanf("%d", &family_id);
+	// 		flushStdin();
+	// 		printf(GREEN"Customer ID to add: "RESET);
+	// 		scanf("%d", &customer_id);
+	// 		flushStdin();
+	// 		addCustomerToFamily(family_id, customer_id);
+	// 		break;
+	// 	}
+	// 	case 3: {
+	// 		printf(BLUE"Family plan ID: "RESET);
+	// 		scanf("%d", &family_id);
+	// 		flushStdin();
+	// 		printf(INDIGO"Customer ID to remove: "RESET);
+	// 		scanf("%d", &customer_id);
+	// 		flushStdin();
+	// 		removeCustomerFromFamily(family_id, customer_id);
+	// 		break;
+	// 	}
+	// 	case 4: {
+	// 		listFamilyPlans();
+	// 		break;
+	// 	}
+	// 	case 5: {
+	// 		printf(RED"Family plan ID: "RESET);
+	// 		scanf("%d", &family_id);
+	// 		flushStdin();
+	// 		showFamilyDetails(family_id, custList, tariffList);
+	// 		break;
+	// 	}
+	// 	case 6: {
+	// 		printf(ORANGE"Family plan ID to delete: "RESET);
+	// 		scanf("%d", &family_id);
+	// 		flushStdin();
+	// 		deleteFamilyPlan(family_id);
+	// 		break;
+	// 	}
+	// 	case 0: {
+	// 		printf(YELLOW"Returning to main menu..."RESET"\n");
+	// 		break;
+	// 	}
+	// 	default: {
+	// 		printf(GREEN"Invalid choice!"RESET"\n");
+	// 	}
+	// 	}
+	// } while (choice != 0);
 }
 
 int main()
@@ -256,7 +349,7 @@ int main()
 
     CLDispose(custList);
     TLDispose(tariffList);
-    freeFamilyPlans(); // Clean up family plans
+    // freeFamilyPlans(); // Clean up family plans
     free(custList);
     free(tariffList);
 

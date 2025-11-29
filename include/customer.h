@@ -37,5 +37,5 @@ void CLDelete(int, CustomerList_t *);
 void CLPrint(CustomerList_t *);
 
 void assignTariff(int, int, TariffList_t *, CustomerList_t *);
-void unassignTariff(int, int, TariffList_t *, CustomerList_t *);
+void unAssignTariff(int, int, TariffList_t *, CustomerList_t *);
 void printAssignedTariffs(int, CustomerList_t *);

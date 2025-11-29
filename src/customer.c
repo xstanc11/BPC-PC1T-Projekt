@@ -117,7 +117,7 @@ Customer_t* CLFindCustomerByPhone(char *phone, Customer_t *customer)
 /**
  * Insert a customer into the customer list.
  * Insert new customers with id == -1 to ensure correct functioning of CLEdit()
- * @param name Customer name
+ * @param fullName Customer name
  * @param phone Phone number
  * @param tariffs Pointer to a list of tariffs
  * @param list Pointer to customer list
@@ -188,6 +188,7 @@ void CLInsert(int id, char *fullName, char *phone, TariffList_t *tariffs, Custom
  */
 void CLEdit(int id, char *name, char *surname, char *phone, CustomerList_t *list)
 {
+    // TODO handle if family plan has this customer assigned
     Customer_t *customer = CLFindCustomerByID(id, list->first);
     char newName[MAX_NAME] = {'\0'}, newSurname[MAX_NAME] = {'\0'}, newPhone[MAX_PHONE] = {'\0'};
     TariffList_t *oldList = customer->assignedTariffs;
@@ -217,6 +218,7 @@ void CLEdit(int id, char *name, char *surname, char *phone, CustomerList_t *list
  */
 void CLDelete(int id, CustomerList_t *list)
 {
+    // TODO handle if family plan has this customer assigned
     Customer_t *customer = CLFindCustomerByID(id, list->first);
     if (!customer) {
         printf(INDIGO"Wrong id (ID = %d), customer not found"RESET"\n", id);
@@ -231,8 +233,10 @@ void CLDelete(int id, CustomerList_t *list)
 
     if (list->first == customer) {
         list->first = customer->next;
-        if (customer->assignedTariffs != NULL)
+        if (customer->assignedTariffs != NULL) {
+            TLDispose(customer->assignedTariffs);
             free(customer->assignedTariffs);
+        }
         free(customer);
         return;
     }
@@ -244,6 +248,10 @@ void CLDelete(int id, CustomerList_t *list)
     }
 
     list->active->next = customer->next;
+    if (customer->assignedTariffs != NULL) {
+        TLDispose(customer->assignedTariffs);
+        free(customer->assignedTariffs);
+    }
     free(customer);
 }
 
@@ -303,7 +311,7 @@ void assignTariff(int tariffId, int customerId, TariffList_t *tariffList, Custom
  * @param tariffList List of available tariffs
  * @param customerList List of registered customers
  */
-void unassignTariff(int tariffId, int customerId, TariffList_t *tariffList, CustomerList_t *customerList)
+void unAssignTariff(int tariffId, int customerId, TariffList_t *tariffList, CustomerList_t *customerList)
 {
     Tariff_t *tariff = TLFindTariffByID(tariffId, tariffList->first);
 
@@ -325,6 +333,11 @@ void unassignTariff(int tariffId, int customerId, TariffList_t *tariffList, Cust
     }
 
     TLDelete(tariff->id, customer->assignedTariffs);
+
+    if (!customer->assignedTariffs->first) { // if the tariff was the last assigned
+        free(customer->assignedTariffs);
+        customer->assignedTariffs = NULL;
+    }
 }
 
 /**

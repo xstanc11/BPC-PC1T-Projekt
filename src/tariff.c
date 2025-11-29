@@ -99,12 +99,12 @@ Tariff_t* TLFindTariffByID(int id, Tariff_t* tariff)
  * Insert a tariff into the tariff list
  * Insert new tariffs with id == -1 to ensure correct functioning of TLEdit()
  * @param name Tariff name
- * @param phone Phone number
+ * @param price Tariff price
  * @param list Pointer to tariff list
  */
 void TLInsert(int id, char* name, double price, TariffList_t* list)
 {
-    Tariff_t* prev, * new;
+    Tariff_t *prev, *new;
     prev = list->first;
 
     if (TLFindTariffByName(name, list->first)) {
@@ -133,13 +133,11 @@ void TLInsert(int id, char* name, double price, TariffList_t* list)
         new->next = NULL;
         list->first = new;
         list->active = new;
-    }
-    else if (new->id < list->active->id) { // insert as first
+    } else if (new->id < list->active->id) { // insert as first
         new->next = list->first;
         list->first = new;
         list->active = new;
-    }
-    else {
+    } else {
         while (list->active && new->id > list->active->id) {
             prev = list->active;
             TLNext(list);
@@ -159,8 +157,9 @@ void TLInsert(int id, char* name, double price, TariffList_t* list)
  */
 void TLEdit(int id, char* name, double price, TariffList_t* list)
 {
+    // TODO handle if customer has this tariff assigned
     Tariff_t* tariff = TLFindTariffByID(id, list->first);
-    char newName[MAX_NAME] = { '\0' };
+    char newName[MAX_NAME] = {'\0'};
     double newPrice = 0.0;
 
     if (!tariff) {
@@ -181,9 +180,10 @@ void TLEdit(int id, char* name, double price, TariffList_t* list)
  * @param id Tariff ID
  * @param list Pointer to tariff list
  */
-void TLDelete(int id, TariffList_t* list)
+void TLDelete(int id, TariffList_t *list)
 {
-    Tariff_t* tariff = TLFindTariffByID(id, list->first);
+    // TODO handle if customer has this tariff assigned
+    Tariff_t *tariff = TLFindTariffByID(id, list->first);
     if (!tariff) {
         printf(GREEN"Wrong id (ID = %d), tariff not found"RESET"\n", id);
         return;
