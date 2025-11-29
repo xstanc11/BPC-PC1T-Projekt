@@ -196,7 +196,7 @@ void CLInsert(int id, char *fullName, char *phone, TariffList_t *tariffs, Custom
  */
 void CLEdit(int id, char *name, char *surname, char *phone, CustomerList_t *list)
 {
-    // TODO handle if family plan has this customer assigned
+    Tariff_t *curr;
     Customer_t *customer = CLFindCustomerByID(id, list->first);
     char newName[2 * MAX_NAME] = {'\0'}, newSurname[MAX_NAME] = {'\0'}, newPhone[MAX_PHONE] = {'\0'};
 
@@ -205,7 +205,20 @@ void CLEdit(int id, char *name, char *surname, char *phone, CustomerList_t *list
         return;
     }
 
-    TariffList_t *oldList = customer->assignedTariffs;
+    TariffList_t *oldList;
+    if (customer->assignedTariffs) {
+        // create a copy of tariff list
+        oldList = TLInit();
+        TLFirst(customer->assignedTariffs);
+        TLFirst(oldList);
+
+        while (customer->assignedTariffs->active) {
+            curr = customer->assignedTariffs->active;
+            TLInsert(curr->id, curr->name, curr->price, oldList);
+            TLNext(customer->assignedTariffs);
+        }
+    } else
+        oldList = customer->assignedTariffs;
 
     (name[0] != '\0') ? strncpy(newName, name, MAX_NAME - 1) : strncpy(newName, customer->name, MAX_NAME - 1);
     (surname[0] != '\0') ? strncpy(newSurname, surname, MAX_NAME - 1) : strncpy(newSurname, customer->surname, MAX_NAME - 1);
@@ -227,7 +240,6 @@ void CLEdit(int id, char *name, char *surname, char *phone, CustomerList_t *list
  */
 void CLDelete(int id, CustomerList_t *list)
 {
-    // TODO handle if family plan has this customer assigned
     Customer_t *customer = CLFindCustomerByID(id, list->first);
     if (!customer) {
         printf(INDIGO"Wrong id (ID = %d), customer not found"RESET"\n", id);
@@ -257,6 +269,10 @@ void CLDelete(int id, CustomerList_t *list)
     }
 
     list->active->next = customer->next;
+    if (customer->assignedTariffs != NULL) {
+        TLDispose(customer->assignedTariffs);
+        free(customer->assignedTariffs);
+    }
     free(customer);
 }
 
@@ -368,7 +384,7 @@ void printAssignedTariffs(int id, CustomerList_t *list)
     printf(ORANGE"Customer %s %s has the following tariffs assigned:"RESET"\n", customer->name, customer->surname);
 
     while (customer->assignedTariffs->active) {
-        printf(YELLOW"\tID: %d\n\tname: %s\n\tprice: %lf"RESET"\n\n", customer->assignedTariffs->active->id, customer->assignedTariffs->active->name, customer->assignedTariffs->active->price);
+        printf(YELLOW"\tID: %d\n\tname: %s\n\tprice: %.2lf"RESET"\n\n", customer->assignedTariffs->active->id, customer->assignedTariffs->active->name, customer->assignedTariffs->active->price);
         TLNext(customer->assignedTariffs);
     }
 }

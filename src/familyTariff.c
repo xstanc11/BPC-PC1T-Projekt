@@ -159,9 +159,10 @@ void FPLInsert(int id, char *name, int maxCustomers, double price, CustomerList_
  */
 void FPLEdit(int id, char *name, int maxCustomers, double price, FamilyPlanList_t *list)
 {
+    Customer_t *curr;
 	FamilyPlan_t *plan = FPLFindPlanByID(id, list->first);
-	char newName[MAX_NAME] = {'\0'};
-	int newMax = 0;
+	char newName[MAX_NAME] = {'\0'}, newCustName[2 * MAX_NAME] = {'\0'};
+	int newMax = 0, counter = 0;
 	double newPrice = 0.0;
 
 	if (!plan) {
@@ -169,7 +170,23 @@ void FPLEdit(int id, char *name, int maxCustomers, double price, FamilyPlanList_
         return;
 	}
 
-    CustomerList_t *oldList = plan->assignedCustomers;
+    CustomerList_t *oldList;
+    if (plan->assignedCustomers) {
+        oldList = CLInit();
+        CLFirst(plan->assignedCustomers);
+        CLFirst(oldList);
+
+        while (plan->assignedCustomers->active) {
+            curr = plan->assignedCustomers->active;
+            strncpy(newCustName, curr->name, MAX_NAME);
+            strcat(newCustName, " ");
+            strcat(newCustName, curr->surname);
+            CLInsert(curr->id, newCustName, curr->phone, NULL, oldList);
+            CLNext(plan->assignedCustomers);
+            counter++;
+        }
+    } else
+        oldList = plan->assignedCustomers;
 
 	(name[0] != '\0') ? strncpy(newName, name, MAX_NAME - 1) : strncpy(newName, plan->name, MAX_NAME - 1);
     newName[MAX_NAME - 1] = '\0';
@@ -178,6 +195,12 @@ void FPLEdit(int id, char *name, int maxCustomers, double price, FamilyPlanList_
 
 	FPLDelete(plan->id, list);
 	FPLInsert(id, newName, newMax, newPrice, oldList, list);
+
+    plan = FPLFindPlanByID(id, list->first);
+    plan->customerCount = counter;
+
+    if (counter > plan->maxCustomers)
+        printf("Warning, number of customers currently exceeds the maximum number of assignable customers. Remove at least %d customer(s)\n", counter - plan->maxCustomers);
 }
 
 /**
@@ -216,6 +239,10 @@ void FPLDelete(int id, FamilyPlanList_t *list)
     }
 
     list->active->next = plan->next;
+    if (plan->assignedCustomers != NULL) {
+        CLDispose(plan->assignedCustomers);
+        free(plan->assignedCustomers);
+    }
     free(plan);
 }
 
@@ -272,7 +299,7 @@ void assignCustomer(int customerId, int familyPlanId, CustomerList_t *customerLi
         return;
     }
 
-    strncpy(newName, customer->name, MAX_NAME - 1);
+    strncpy(newName, customer->name, MAX_NAME);
     strcat(newName, " ");
     strcat(newName, customer->surname);
 

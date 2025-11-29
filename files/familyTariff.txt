@@ -1,7 +1,7 @@
 0;Neomezene xxl pro 5 clenu (30%discount);5;4550.00;1
 1;Neomezene xxl pro 4 cleny (25%discount);4;4875.00;-
 2;Neomezene xxl pro 3 cleny (20%discount);3;5200.00;-
-3;Neomezene xxl pro 2 cleny (10%discount);2;5850.00;-
+3;Neomezene xxl pro 2 cleny (10%discount);2;5850.00;3,2
 4;Neomezene xl pro 5 clenu (30%discount);5;3500.00;-
 5;Neomezene xl pro 4 cleny (25%discount);4;3750.00;-
 6;Neomezene xl pro 3 cleny (20%discount);3;4000.00;-

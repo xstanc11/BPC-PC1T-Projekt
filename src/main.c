@@ -11,10 +11,6 @@
 #include "familyTariff.h"
 #include "fileOP.h"
 
-TariffList_t *tariffList = NULL;
-CustomerList_t *custList = NULL;
-FamilyPlanList_t *familyPlanList = NULL;
-
 void printMainMenu()
 {
     printf(RED "==== Main MENU ====" RESET "\n");
@@ -72,7 +68,7 @@ void printFamilyMenu()
 	printf(YELLOW"Choice: "RESET);
 }
 
-void handleCustomerMenu(CustomerList_t *custList)
+void handleCustomerMenu(CustomerList_t *custList, FamilyPlanList_t *familyPlanList)
 {
     int choice, id;
     char name[MAX_NAME] = {'\0'}, surname[MAX_NAME] = {'\0'}, phone[MAX_PHONE] = {'\0'}, fullName[2 * MAX_NAME] = {'\0'};
@@ -105,6 +101,16 @@ void handleCustomerMenu(CustomerList_t *custList)
             printf(VIOLET "New phone (optional): " RESET);
             readLine(phone, sizeof(phone));
             CLEdit(id, name, surname, phone, custList);
+
+            // update customer list in family plans
+            FPLFirst(familyPlanList);
+            while (familyPlanList->active) {
+                if (familyPlanList->active->assignedCustomers) {
+                    if (CLFindCustomerByID(id, familyPlanList->active->assignedCustomers->first))
+                        CLEdit(id, name, surname, phone, familyPlanList->active->assignedCustomers);
+                }
+                FPLNext(familyPlanList);
+            }
             break;
         }
         case 3: { // delete customer
@@ -112,7 +118,18 @@ void handleCustomerMenu(CustomerList_t *custList)
             printf(RED "Customers ID: " RESET);
             scanf("%d", &id);
             flushStdin();
+
+            // update customer list in family plans
+            FPLFirst(familyPlanList);
+            while (familyPlanList->active) {
+                if (familyPlanList->active->assignedCustomers) {
+                    if (CLFindCustomerByID(id, familyPlanList->active->assignedCustomers->first))
+                        unAssignCustomer(id, familyPlanList->active->id, custList, familyPlanList);
+                }
+                FPLNext(familyPlanList);
+            }
             CLDelete(id, custList);
+
             break;
         }
         case 4: {
@@ -130,7 +147,7 @@ void handleCustomerMenu(CustomerList_t *custList)
     } while (choice != 0);
 }
 
-void handleTariffMenu(TariffList_t *tariffList)
+void handleTariffMenu(CustomerList_t *custList, TariffList_t *tariffList)
 {
     int choice, id;
     char name[MAX_NAME] = {'\0'};
@@ -158,6 +175,15 @@ void handleTariffMenu(TariffList_t *tariffList)
             printf(BLUE "New price (if wanted to be kept as original, type -1): " RESET);
             scanf("%lf", &price);
             flushStdin();
+
+            CLFirst(custList);
+            while (custList->active) {
+                if (custList->active->assignedTariffs) {
+                    if (TLFindTariffByID(id, custList->active->assignedTariffs->first))
+                        TLEdit(id, name, price, custList->active->assignedTariffs);
+                }
+                CLNext(custList);
+            }
             TLEdit(id, name, price, tariffList);
             break;
         }
@@ -165,6 +191,15 @@ void handleTariffMenu(TariffList_t *tariffList)
             printf(RED "Tariff ID: " RESET);
             scanf("%d", &id);
             flushStdin();
+
+            CLFirst(custList);
+            while (custList->active) {
+                if (custList->active->assignedTariffs) {
+                    if (TLFindTariffByID(id, custList->active->assignedTariffs->first))
+                        unAssignTariff(id, custList->active->id, tariffList, custList);
+                }
+                CLNext(custList);
+            }
             TLDelete(id, tariffList);
             break;
         }
@@ -229,7 +264,7 @@ void handleAssignmentMenu(CustomerList_t *custList, TariffList_t *tariffList)
     } while (choice != 0);
 }
 
-void handleFamilyMenu(CustomerList_t* custList, TariffList_t* tariffList)
+void handleFamilyMenu(CustomerList_t* custList, TariffList_t* tariffList, FamilyPlanList_t *familyPlanList)
 {
 	int choice, id, familyPlanId, custId, tariffId, max;
 	char name[MAX_NAME] = {'\0'};
@@ -325,9 +360,11 @@ int main()
     flushStdin();
     if (machine != LINUX && machine != WINDOWS)
         exit(-1);
-    tariffList = TLInit();
-    custList = CLInit();
-    familyPlanList = FPLInit();
+
+    TariffList_t *tariffList = TLInit();
+    CustomerList_t *custList = CLInit();
+    FamilyPlanList_t *familyPlanList = FPLInit();
+
     readFile(machine, tariffList, custList, familyPlanList);
     int choice;
     do {
@@ -336,11 +373,11 @@ int main()
         flushStdin();
         switch (choice) {
         case 1: {
-            handleCustomerMenu(custList);
+            handleCustomerMenu(custList, familyPlanList);
             break;
         }
         case 2: {
-            handleTariffMenu(tariffList);
+            handleTariffMenu(custList, tariffList);
             break;
         }
         case 3: {
@@ -348,7 +385,7 @@ int main()
             break;
         }
         case 4: {
-            handleFamilyMenu(custList, tariffList);
+            handleFamilyMenu(custList, tariffList, familyPlanList);
             break;
         }
         case 0: {
