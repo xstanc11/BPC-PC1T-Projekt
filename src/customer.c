@@ -10,6 +10,9 @@
 
 int NextCustID = 0;
 
+/**
+ * Increment customer ID
+ */
 void incrementCustomerId()
 {
     NextCustID++;
@@ -196,12 +199,13 @@ void CLEdit(int id, char *name, char *surname, char *phone, CustomerList_t *list
     // TODO handle if family plan has this customer assigned
     Customer_t *customer = CLFindCustomerByID(id, list->first);
     char newName[2 * MAX_NAME] = {'\0'}, newSurname[MAX_NAME] = {'\0'}, newPhone[MAX_PHONE] = {'\0'};
-    TariffList_t *oldList = customer->assignedTariffs; // TODO bug, assign after checking
 
     if (!customer) {
         printf(BLUE"Wrong id (ID = %d), customer not found"RESET"\n", id);
         return;
     }
+
+    TariffList_t *oldList = customer->assignedTariffs;
 
     (name[0] != '\0') ? strncpy(newName, name, MAX_NAME - 1) : strncpy(newName, customer->name, MAX_NAME - 1);
     (surname[0] != '\0') ? strncpy(newSurname, surname, MAX_NAME - 1) : strncpy(newSurname, customer->surname, MAX_NAME - 1);

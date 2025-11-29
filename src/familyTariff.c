@@ -12,6 +12,9 @@
 
 int NextFamilyPlanID = 0;
 
+/**
+ * Increment family plan ID
+ */
 void incrementFamilyPlanId()
 {
     NextFamilyPlanID++;
@@ -120,7 +123,6 @@ void FPLInsert(int id, char *name, int maxCustomers, double price, CustomerList_
 	else
 		new->id = id;
 
-    printf("newid %d", new->id);
 	strncpy(new->name, name, strlen(name));
 	new->assignedCustomers = customers;
 	new->maxCustomers = maxCustomers;
@@ -161,12 +163,13 @@ void FPLEdit(int id, char *name, int maxCustomers, double price, FamilyPlanList_
 	char newName[MAX_NAME] = {'\0'};
 	int newMax = 0;
 	double newPrice = 0.0;
-	CustomerList_t *oldList = plan->assignedCustomers;
 
 	if (!plan) {
-		printf(YELLOW"Wrong id (ID = %d), family plan not found"RESET"\n", id);
+        printf(YELLOW"Wrong id (ID = %d), family plan not found"RESET"\n", id);
         return;
 	}
+
+    CustomerList_t *oldList = plan->assignedCustomers;
 
 	(name[0] != '\0') ? strncpy(newName, name, MAX_NAME - 1) : strncpy(newName, plan->name, MAX_NAME - 1);
     newName[MAX_NAME - 1] = '\0';

@@ -27,6 +27,13 @@ void parseTariffs(char *tariffs, int id, TariffList_t *tariffList, CustomerList_
     }
 }
 
+/**
+ * Parses out customers during file read and assigns them correctly
+ * @param assignedCustomers Pointer to list of customers to be assigned
+ * @param id Id of family plan
+ * @param customerList Pointer to list of customers
+ * @param familyPlanList Pointer to list of family plan
+ */
 void parseCustomers(char *assignedCustomers, int id, CustomerList_t *customerList, FamilyPlanList_t *familyPlanList)
 {
     char *token, *saveptr;
