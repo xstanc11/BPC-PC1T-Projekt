@@ -16,7 +16,7 @@
  */
 void parseTariffs(char *tariffs, int id, TariffList_t *tariffList, CustomerList_t *customerList)
 {
-    char *token, tariffId[1];
+    char *token;
     if (tariffs[0] == '-')
         return;
 
@@ -27,19 +27,33 @@ void parseTariffs(char *tariffs, int id, TariffList_t *tariffList, CustomerList_
     }
 }
 
+void parseCustomers(char *assignedCustomers, int id, CustomerList_t *customerList, FamilyPlanList_t *familyPlanList)
+{
+    char *token, *saveptr;
+    if (assignedCustomers[0] == '-')
+        return;
+    
+    token = strtok_r(assignedCustomers, ",", &saveptr);
+    while (token != NULL) {
+        assignCustomer(atoi(token), id, customerList, familyPlanList);
+        token = strtok_r(NULL, ",", &saveptr);
+    }
+}
+
 /**
  * Reads from persistent file into memory
  * @param tariffList Pointer to list of tariffs
  * @param customerList Pointer to list of customers
  */
-void readFile(int machine, TariffList_t *tariffList, CustomerList_t *customerList)
+void readFile(int machine, TariffList_t *tariffList, CustomerList_t *customerList, FamilyPlanList_t *familyPlanList)
 {
     FILE *f;
     char inputBuff[MAX_NAME * 4] = {'\0'}; // for good measure
-    char *id, name[MAX_NAME], phone[MAX_PHONE], price[MAX_NAME], tariffs[MAX_NAME];
+    char *id, maxUsers[MAX_NAME] = {'\0'}, name[MAX_NAME] = {'\0'}, phone[MAX_PHONE] = {'\0'}, price[MAX_NAME] = {'\0'}, tariffs[MAX_NAME] = {'\0'}, assignedCustomers[MAX_NAME] = {'\0'};
     char c;
     char *walker = inputBuff;
 
+    // load tariffs
     if (machine == LINUX)
         f = fopen("../files/tariff.txt", "r");
     else
@@ -60,6 +74,8 @@ void readFile(int machine, TariffList_t *tariffList, CustomerList_t *customerLis
 
             memset(inputBuff, '\0', sizeof(inputBuff));
             walker = inputBuff;
+
+            incrementTariffId();
         }
         *walker = c;
         walker++;
@@ -67,6 +83,7 @@ void readFile(int machine, TariffList_t *tariffList, CustomerList_t *customerLis
 
     fclose(f);
 
+    // load customers
     if (machine == LINUX)
         f = fopen("../files/customer.txt", "r");
     else
@@ -90,6 +107,41 @@ void readFile(int machine, TariffList_t *tariffList, CustomerList_t *customerLis
 
             memset(inputBuff, '\0', sizeof(inputBuff));
             walker = inputBuff;
+
+            incrementCustomerId();
+        }
+        *walker = c;
+        walker++;
+    }
+
+    fclose(f);
+
+    // load family tariffs
+    if (machine == LINUX)
+        f = fopen("../files/familyTariff.txt", "r");
+    else
+        f = fopen("../../../files/familyTariff.txt", "r");
+
+    if (!f) {
+        fprintf(stderr, RED"Unable to open familyTariff.txt\n"RESET);
+        exit(-1);
+    }
+
+    while ((c = (char)fgetc(f)) != EOF) {
+        if (c == '\n') {
+            id = strtok(inputBuff, ";");
+            strncpy(name, strtok(NULL, ";"), sizeof(name));
+            strncpy(maxUsers, strtok(NULL, ";"), sizeof(maxUsers));
+            strncpy(price, strtok(NULL, ";"), sizeof(price));
+            strncpy(assignedCustomers, strtok(NULL, ";"), sizeof(assignedCustomers));
+
+            FPLInsert(atoi(id), name, atoi(maxUsers), atol(price), NULL, familyPlanList);
+            parseCustomers(assignedCustomers, atoi(id), customerList, familyPlanList);
+
+            memset(inputBuff, '\0', sizeof(inputBuff));
+            walker = inputBuff;
+
+            incrementFamilyPlanId();
         }
         *walker = c;
         walker++;
@@ -103,10 +155,11 @@ void readFile(int machine, TariffList_t *tariffList, CustomerList_t *customerLis
  * @param tariffList Pointer to list of tariffs
  * @param customerList Pointer to list of customers
  */
-void saveFile(int machine, TariffList_t *tariffList, CustomerList_t *customerList)
+void saveFile(int machine, TariffList_t *tariffList, CustomerList_t *customerList, FamilyPlanList_t *familyPlanList)
 {
-    Customer_t *customer;
+    Customer_t *customer, *assignedCustomer;
     Tariff_t *tariff, *assignedTariff;
+    FamilyPlan_t *familyPlan;
     FILE *f;
 
     if (machine == LINUX)
@@ -160,6 +213,41 @@ void saveFile(int machine, TariffList_t *tariffList, CustomerList_t *customerLis
         }
 
         CLNext(customerList);
+    }
+
+    fclose(f);
+
+    if (machine == LINUX)
+        f = fopen("../files/familyTariff.txt", "w");
+    else
+        f = fopen("../../../files/familyTariff.txt", "w");
+
+    if (!f) {
+        fprintf(stderr, RED"Unable to open familyTariff.txt\n"RESET);
+        exit(-1);
+    }
+
+    FPLFirst(familyPlanList);
+    while (familyPlanList->active) {
+        familyPlan = familyPlanList->active;
+        fprintf(f, "%d;%s;%d;%.2lf;", familyPlan->id, familyPlan->name, familyPlan->maxCustomers, familyPlan->price);
+
+        if (!familyPlan->assignedCustomers)
+            fprintf(f, "-\n");
+        else {
+            CLFirst(familyPlan->assignedCustomers);
+            while (familyPlan->assignedCustomers->active) {
+                assignedCustomer = familyPlan->assignedCustomers->active;
+                fprintf(f, "%d", assignedCustomer->id);
+                if (assignedCustomer->next)
+                    fprintf(f, ",");
+
+                CLNext(familyPlan->assignedCustomers);
+            }
+            fprintf(f, "\n");
+        }
+
+        FPLNext(familyPlanList);
     }
 
     fclose(f);

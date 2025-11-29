@@ -10,9 +10,12 @@
 #include "tariff.h"
 #include "familyTariff.h"
 
-// Global family plan list
-FamilyPlan_t* family_head = NULL;
-int NextFamilyTariffID = 0;
+int NextFamilyPlanID = 0;
+
+void incrementFamilyPlanId()
+{
+    NextFamilyPlanID++;
+}
 
 /**
  * Initialize Family plan linked list
@@ -44,6 +47,10 @@ void FPLDispose(FamilyPlanList_t *list)
     while (list->active) {
         FamilyPlan_t *curr = list->active;
         FPLNext(list);
+        if (curr->assignedCustomers != NULL) {
+            CLDispose(curr->assignedCustomers);
+            free(curr->assignedCustomers);
+        }
         free(curr);
     }
 }
@@ -109,10 +116,11 @@ void FPLInsert(int id, char *name, int maxCustomers, double price, CustomerList_
     memset(new, 0, sizeof(FamilyPlan_t));
 
 	if (id == -1)
-		new->id = NextFamilyTariffID++;
+		new->id = NextFamilyPlanID++;
 	else
 		new->id = id;
 
+    printf("newid %d", new->id);
 	strncpy(new->name, name, strlen(name));
 	new->assignedCustomers = customers;
 	new->maxCustomers = maxCustomers;
@@ -162,7 +170,7 @@ void FPLEdit(int id, char *name, int maxCustomers, double price, FamilyPlanList_
 
 	(name[0] != '\0') ? strncpy(newName, name, MAX_NAME - 1) : strncpy(newName, plan->name, MAX_NAME - 1);
     newName[MAX_NAME - 1] = '\0';
-	(maxCustomers != -1) ? (newMax = maxCustomers) : (newPrice = plan->price);
+	(maxCustomers != -1) ? (newMax = maxCustomers) : (newMax = plan->maxCustomers);
 	(price != -1) ? (newPrice = price) : (newPrice = plan->price);
 
 	FPLDelete(plan->id, list);
@@ -205,10 +213,6 @@ void FPLDelete(int id, FamilyPlanList_t *list)
     }
 
     list->active->next = plan->next;
-	if (plan->assignedCustomers != NULL) {
-		CLDispose(plan->assignedCustomers);
-		free(plan->assignedCustomers);
-	}
     free(plan);
 }
 
@@ -222,7 +226,7 @@ void FPLPrint(FamilyPlanList_t *list)
 	FPLFirst(list);
 	while (list->active) {
 		curr = list->active;
-		printf(RED "ID: %d\nname: %s\nmaximum number of assignable customers: %d\nnumber of currently assigned customers: %d\nprice: %.2lf\n" RESET, curr->id, curr->name, curr->maxCustomers, curr->customerCount, curr->price);
+		printf(RED "ID: %d\nname: %s\nmaximum number of assignable customers: %d\nnumber of currently assigned customers: %d\nprice: %.2lf\n\n" RESET, curr->id, curr->name, curr->maxCustomers, curr->customerCount, curr->price);
 		FPLNext(list);
 	}
 }
@@ -236,6 +240,7 @@ void FPLPrint(FamilyPlanList_t *list)
  */
 void assignCustomer(int customerId, int familyPlanId, CustomerList_t *customerList, FamilyPlanList_t *familyPlanList)
 {
+    char newName[2 * MAX_NAME] = {'\0'};
 	Customer_t *customer = CLFindCustomerByID(customerId, customerList->first);
 
 	if (!customer) {
@@ -259,7 +264,19 @@ void assignCustomer(int customerId, int familyPlanId, CustomerList_t *customerLi
         }
 	}
 
-	CLInsert(customer->id, customer->name, customer->phone, customer->assignedTariffs, plan->assignedCustomers);
+    if (plan->customerCount + 1 > plan->maxCustomers) {
+        printf("Family plan (ID = %d) already has maximum of assignable customers\n", plan->id);
+        return;
+    }
+
+    strncpy(newName, customer->name, MAX_NAME - 1);
+    strcat(newName, " ");
+    strcat(newName, customer->surname);
+
+    plan->customerCount++;
+
+    // tariffs can be null because there is no reason to track that in family plan
+	CLInsert(customer->id, newName, customer->phone, NULL, plan->assignedCustomers);
 }
 
 /**
@@ -290,6 +307,8 @@ void unAssignCustomer(int customerId, int familyPlanId, CustomerList_t *customer
         return;
     }
 
+    plan->customerCount--;
+    
     CLDelete(customer->id, plan->assignedCustomers);
 
     if (!plan->assignedCustomers->first) { // if the customer was the last assigned
@@ -318,7 +337,7 @@ void printAssignedCustomers(int id, FamilyPlanList_t *list)
     }
 
     CLFirst(plan->assignedCustomers);
-    printf(ORANGE"Family plan %s has the following customers assigned:"RESET"\n", plan->name);
+    printf(ORANGE"Family plan %s has the following customers assigned: (%d out of %d)"RESET"\n", plan->name, plan->customerCount, plan->maxCustomers);
 
 	Customer_t *curr;
 

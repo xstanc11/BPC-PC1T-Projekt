@@ -320,13 +320,15 @@ void handleFamilyMenu(CustomerList_t* custList, TariffList_t* tariffList)
 int main()
 {
     int machine;
-    printf(GREEN "Specify the OS of the machine: (LINUX = 0, WINDOWS = 1)" RESET "\n");
+    printf(GREEN "Specify the OS of the machine: (LINUX = 0, WINDOWS = 1): " RESET);
     scanf("%d", &machine);
     flushStdin();
+    if (machine != LINUX && machine != WINDOWS)
+        exit(-1);
     tariffList = TLInit();
     custList = CLInit();
     familyPlanList = FPLInit();
-    readFile(machine, tariffList, custList);
+    readFile(machine, tariffList, custList, familyPlanList);
     int choice;
     do {
         printMainMenu();
@@ -359,7 +361,7 @@ int main()
         }
     } while (choice != 0);
 
-    saveFile(machine, tariffList, custList);
+    saveFile(machine, tariffList, custList, familyPlanList);
 
     CLDispose(custList);
     TLDispose(tariffList);

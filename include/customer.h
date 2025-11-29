@@ -20,6 +20,8 @@ typedef struct {
     Customer_t *active;
 } CustomerList_t;
 
+void incrementCustomerId();
+
 CustomerList_t* CLInit();
 void CLDispose(CustomerList_t *);
 

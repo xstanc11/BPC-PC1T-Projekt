@@ -20,6 +20,8 @@ typedef struct {
 	FamilyPlan_t *active;
 } FamilyPlanList_t;
 
+void incrementFamilyPlanId();
+
 FamilyPlanList_t* FPLInit();
 void FPLDispose(FamilyPlanList_t *);
 

@@ -11,6 +11,10 @@
 
 int NextTariffID = 0;
 
+void incrementTariffId()
+{
+    NextTariffID++;
+}
 /**
  * Initialize Tariff linked list
  * @param list Pointer to tariff list

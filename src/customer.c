@@ -10,6 +10,11 @@
 
 int NextCustID = 0;
 
+void incrementCustomerId()
+{
+    NextCustID++;
+}
+
 /**
  * Initialize Customer linked list
  * @param list Pointer to customer list
@@ -190,8 +195,8 @@ void CLEdit(int id, char *name, char *surname, char *phone, CustomerList_t *list
 {
     // TODO handle if family plan has this customer assigned
     Customer_t *customer = CLFindCustomerByID(id, list->first);
-    char newName[MAX_NAME] = {'\0'}, newSurname[MAX_NAME] = {'\0'}, newPhone[MAX_PHONE] = {'\0'};
-    TariffList_t *oldList = customer->assignedTariffs;
+    char newName[2 * MAX_NAME] = {'\0'}, newSurname[MAX_NAME] = {'\0'}, newPhone[MAX_PHONE] = {'\0'};
+    TariffList_t *oldList = customer->assignedTariffs; // TODO bug, assign after checking
 
     if (!customer) {
         printf(BLUE"Wrong id (ID = %d), customer not found"RESET"\n", id);
@@ -248,10 +253,6 @@ void CLDelete(int id, CustomerList_t *list)
     }
 
     list->active->next = customer->next;
-    if (customer->assignedTariffs != NULL) {
-        TLDispose(customer->assignedTariffs);
-        free(customer->assignedTariffs);
-    }
     free(customer);
 }
 

@@ -18,6 +18,8 @@ typedef struct {
     Tariff_t *active;
 } TariffList_t;
 
+void incrementTariffId();
+
 TariffList_t* TLInit();
 void TLDispose(TariffList_t *);
 
