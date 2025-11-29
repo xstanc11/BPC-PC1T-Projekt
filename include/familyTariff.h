@@ -20,8 +20,6 @@ typedef struct {
 	FamilyPlan_t *active;
 } FamilyPlanList_t;
 
-FamilyPlan_t* createFamilyPlan(const char*, int, double);
-
 FamilyPlanList_t* FPLInit();
 void FPLDispose(FamilyPlanList_t *);
 
@@ -34,10 +32,8 @@ void FPLInsert(int, char *, int, double, CustomerList_t *, FamilyPlanList_t *);
 void FPLEdit(int, char *, int, double, FamilyPlanList_t *);
 void FPLDelete(int, FamilyPlanList_t *);
 
-void addCustomerToFamily(int, int);
-void removeCustomerFromFamily(int, int);
-void listFamilyPlans();
-double calculateFamilyPrice(int, TariffList_t*);
-void showFamilyDetails(int, CustomerList_t*, TariffList_t*);
-void deleteFamilyPlan(int);
-void freeFamilyPlans();
+void FPLPrint(FamilyPlanList_t *);
+
+void assignCustomer(int, int, CustomerList_t *, FamilyPlanList_t *);
+void unAssignCustomer(int, int, CustomerList_t *, FamilyPlanList_t *);
+void printAssignedCustomers(int, FamilyPlanList_t *);
