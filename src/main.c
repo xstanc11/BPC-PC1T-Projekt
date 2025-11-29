@@ -11,6 +11,10 @@
 #include "familyTariff.h"
 #include "fileOP.h"
 
+TariffList_t *tariffList = NULL;
+CustomerList_t *custList = NULL;
+FamilyPlanList_t *familyPlanList = NULL;
+
 void printMainMenu()
 {
     printf(RED "==== Main MENU ====" RESET "\n");
@@ -56,15 +60,16 @@ void printAssignmentMenu()
 
 void printFamilyMenu()
 {
-	printf(RED"==== Family Plan Management ====R"RESET"\n");
+	printf(RED"==== Family Plan Management ===="RESET"\n");
 	printf(ORANGE"1) Create family plan"RESET"\n");
-	printf(YELLOW"2) Add customer to family"RESET"\n");
-	printf(GREEN"3) Remove customer from family"RESET"\n");
+	printf(YELLOW"2) Edit family plan"RESET"\n");
+	printf(GREEN"3) Delete family plan"RESET"\n");
 	printf(BLUE"4) List all family plans"RESET"\n");
-	printf(INDIGO"5) Show family plan details"RESET"\n");
-	printf(VIOLET"6) Delete family plan"RESET"\n");
-	printf(RED"0) Back to main menu"RESET"\n");
-	printf(ORANGE"Choice: ");
+	printf(INDIGO"5) Assign customer to family plan "RESET"\n");
+	printf(VIOLET"6) Unassign customer from family plan"RESET"\n");
+	printf(RED"7) List customers assigned to family plan"RESET"\n");
+	printf(ORANGE"0) Back to main menu"RESET"\n");
+	printf(YELLOW"Choice: "RESET);
 }
 
 void handleCustomerMenu(CustomerList_t *custList)
@@ -150,7 +155,7 @@ void handleTariffMenu(TariffList_t *tariffList)
             flushStdin();
             printf(GREEN "New name: (optional) " RESET);
             readLine(name, sizeof(name));
-            printf(BLUE "New price: (if wanted to be kept as original, type -1) " RESET);
+            printf(BLUE "New price (if wanted to be kept as original, type -1): " RESET);
             scanf("%lf", &price);
             flushStdin();
             TLEdit(id, name, price, tariffList);
@@ -226,82 +231,90 @@ void handleAssignmentMenu(CustomerList_t *custList, TariffList_t *tariffList)
 
 void handleFamilyMenu(CustomerList_t* custList, TariffList_t* tariffList)
 {
-	// int choice;
-	// char name[MAX_NAME] = {'\0'};
-	// int family_id, customer_id, tariff_id;
-	// double discount;
+	int choice, id, familyPlanId, custId, tariffId, max;
+	char name[MAX_NAME] = {'\0'};
+    double price;
 
-	// do {
-	// 	printFamilyMenu();
-	// 	scanf("%d", &choice);
-	// 	flushStdin();
+	do {
+		printFamilyMenu();
+		scanf("%d", &choice);
+		flushStdin();
 
-	// 	switch (choice) {
-	// 	case 1: {
-	// 		printf(BLUE"Family plan name: "RESET);
-	// 		readLine(name, sizeof(name));
-	// 		printf(INDIGO"Tariff ID: "RESET);
-	// 		scanf("%d", &tariff_id);
-	// 		flushStdin();
-	// 		printf(RED"Discount percentage (0-50): "RESET);
-	// 		scanf("%lf", &discount);
-	// 		flushStdin();
-
-	// 		if (discount < 0 || discount > 50) {
-	// 			printf(ORANGE"Invalid discount! Using 10%%"RESET"\n");
-	// 			discount = 10.0;
-	// 		}
-
-	// 		createFamilyPlan(name, tariff_id, discount);
-	// 		break;
-	// 	}
-	// 	case 2: {
-	// 		printf(YELLOW"Family plan ID: "RESET);
-	// 		scanf("%d", &family_id);
-	// 		flushStdin();
-	// 		printf(GREEN"Customer ID to add: "RESET);
-	// 		scanf("%d", &customer_id);
-	// 		flushStdin();
-	// 		addCustomerToFamily(family_id, customer_id);
-	// 		break;
-	// 	}
-	// 	case 3: {
-	// 		printf(BLUE"Family plan ID: "RESET);
-	// 		scanf("%d", &family_id);
-	// 		flushStdin();
-	// 		printf(INDIGO"Customer ID to remove: "RESET);
-	// 		scanf("%d", &customer_id);
-	// 		flushStdin();
-	// 		removeCustomerFromFamily(family_id, customer_id);
-	// 		break;
-	// 	}
-	// 	case 4: {
-	// 		listFamilyPlans();
-	// 		break;
-	// 	}
-	// 	case 5: {
-	// 		printf(RED"Family plan ID: "RESET);
-	// 		scanf("%d", &family_id);
-	// 		flushStdin();
-	// 		showFamilyDetails(family_id, custList, tariffList);
-	// 		break;
-	// 	}
-	// 	case 6: {
-	// 		printf(ORANGE"Family plan ID to delete: "RESET);
-	// 		scanf("%d", &family_id);
-	// 		flushStdin();
-	// 		deleteFamilyPlan(family_id);
-	// 		break;
-	// 	}
-	// 	case 0: {
-	// 		printf(YELLOW"Returning to main menu..."RESET"\n");
-	// 		break;
-	// 	}
-	// 	default: {
-	// 		printf(GREEN"Invalid choice!"RESET"\n");
-	// 	}
-	// 	}
-	// } while (choice != 0);
+		switch (choice) {
+		case 1: { // insert family plan
+			printf(BLUE"Family plan name: "RESET);
+			readLine(name, sizeof(name));
+			printf(INDIGO"Maximum number of assignable customers: "RESET);
+			scanf("%d", &max);
+			flushStdin();
+			printf(RED"Family tariff price: "RESET);
+			scanf("%lf", &price);
+			flushStdin();
+            FPLInsert(-1, name, max, price, NULL, familyPlanList);
+			break;
+		}
+		case 2: { // edit family plan
+			printf(YELLOW"Family plan ID: "RESET);
+			scanf("%d", &id);
+			flushStdin();
+			printf(GREEN"New name (optional, in such case leave blank): "RESET);
+            readLine(name, sizeof(name));
+			printf(GREEN"New maximum of assignable customers (if wanted to be kept as original, type -1): "RESET);
+            scanf("%d", &max);
+            flushStdin();
+            printf(GREEN"New price (if wanted to be kept as original, type -1): "RESET);
+            scanf("%lf", &price);
+            flushStdin();
+            FPLEdit(id, name, max, price, familyPlanList);
+			break;
+		}
+		case 3: { // delete family plan
+			printf(BLUE"Family plan ID: "RESET);
+			scanf("%d", &id);
+			flushStdin();
+            FPLDelete(id, familyPlanList);
+			break;
+		}
+		case 4: { // print family plans
+            FPLPrint(familyPlanList);
+			break;
+		}
+		case 5: { // assign customer to family plan
+			printf(RED"Customer ID: "RESET);
+			scanf("%d", &custId);
+			flushStdin();
+			printf(RED"Family plan ID: "RESET);
+			scanf("%d", &familyPlanId);
+			flushStdin();
+            assignCustomer(custId, familyPlanId, custList, familyPlanList);
+			break;
+		}
+		case 6: { // unassign customer from family plan
+			printf(ORANGE"Customer ID: "RESET);
+            scanf("%d", &custId);
+            flushStdin();
+			printf(ORANGE"Family plan ID: "RESET);
+			scanf("%d", &familyPlanId);
+			flushStdin();
+            unAssignCustomer(custId, familyPlanId, custList, familyPlanList);
+			break;
+		}
+        case 7: { // print family plan's customers
+            printf(RED"Family plan ID: "RESET);
+            scanf("%d", &familyPlanId);
+            flushStdin();
+            printAssignedCustomers(familyPlanId, familyPlanList);
+            break;
+        }
+		case 0: {
+			printf(YELLOW"Returning to main menu..."RESET"\n");
+			break;
+		}
+		default: {
+			printf(GREEN"Invalid choice!"RESET"\n");
+		}
+		}
+	} while (choice != 0);
 }
 
 int main()
@@ -310,8 +323,9 @@ int main()
     printf(GREEN "Specify the OS of the machine: (LINUX = 0, WINDOWS = 1)" RESET "\n");
     scanf("%d", &machine);
     flushStdin();
-    TariffList_t* tariffList = TLInit();
-    CustomerList_t* custList = CLInit();
+    tariffList = TLInit();
+    custList = CLInit();
+    familyPlanList = FPLInit();
     readFile(machine, tariffList, custList);
     int choice;
     do {
@@ -349,10 +363,10 @@ int main()
 
     CLDispose(custList);
     TLDispose(tariffList);
-    // freeFamilyPlans(); // Clean up family plans
+    FPLDispose(familyPlanList);
     free(custList);
     free(tariffList);
-
+    free(familyPlanList);
 
     return 0;
 }

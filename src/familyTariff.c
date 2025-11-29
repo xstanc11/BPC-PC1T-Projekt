@@ -222,7 +222,7 @@ void FPLPrint(FamilyPlanList_t *list)
 	FPLFirst(list);
 	while (list->active) {
 		curr = list->active;
-		printf(RED "ID: %d\nname: %s\nmaximum number of assignable customers: %d\nnumber of currently assigned customers: %d\nprice: %lf\n" RESET, curr->id, curr->name, curr->maxCustomers, curr->customerCount, curr->price);
+		printf(RED "ID: %d\nname: %s\nmaximum number of assignable customers: %d\nnumber of currently assigned customers: %d\nprice: %.2lf\n" RESET, curr->id, curr->name, curr->maxCustomers, curr->customerCount, curr->price);
 		FPLNext(list);
 	}
 }
