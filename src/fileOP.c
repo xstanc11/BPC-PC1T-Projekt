@@ -40,10 +40,10 @@ void parseCustomers(char *assignedCustomers, int id, CustomerList_t *customerLis
     if (assignedCustomers[0] == '-')
         return;
     
-    token = strtok_r(assignedCustomers, ",", &saveptr);
+    token = strtok_s(assignedCustomers, ",", &saveptr);
     while (token != NULL) {
         assignCustomer(atoi(token), id, customerList, familyPlanList);
-        token = strtok_r(NULL, ",", &saveptr);
+        token = strtok_s(NULL, ",", &saveptr);
     }
 }
 
