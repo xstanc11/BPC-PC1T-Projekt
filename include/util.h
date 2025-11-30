@@ -21,9 +21,3 @@ void flushStdin();
 void readLine(char *, size_t);
 
 void splitName(char *, char *, char *);
-
-void editInAuxTL();
-void deleteInAuxTL();
-
-void editInAuxCL();
-void deleteInAuxCL();

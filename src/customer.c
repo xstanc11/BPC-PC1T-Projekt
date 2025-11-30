@@ -384,7 +384,7 @@ void printAssignedTariffs(int id, CustomerList_t *list)
     printf(ORANGE"Customer %s %s has the following tariffs assigned:"RESET"\n", customer->name, customer->surname);
 
     while (customer->assignedTariffs->active) {
-        printf(YELLOW"\tID: %d\n\tname: %s\n\tprice: %.2lf"RESET"\n\n", customer->assignedTariffs->active->id, customer->assignedTariffs->active->name, customer->assignedTariffs->active->price);
+        printf(YELLOW"\tID: %d\n\tname: %s\n\tprice: %.2lfczk"RESET"\n\n", customer->assignedTariffs->active->id, customer->assignedTariffs->active->name, customer->assignedTariffs->active->price);
         TLNext(customer->assignedTariffs);
     }
 }
