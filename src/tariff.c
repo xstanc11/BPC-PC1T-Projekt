@@ -165,7 +165,6 @@ void TLInsert(int id, char* name, double price, TariffList_t* list)
  */
 void TLEdit(int id, char* name, double price, TariffList_t* list)
 {
-    // TODO handle if customer has this tariff assigned
     Tariff_t* tariff = TLFindTariffByID(id, list->first);
     char newName[MAX_NAME] = {'\0'};
     double newPrice = 0.0;
@@ -190,7 +189,6 @@ void TLEdit(int id, char* name, double price, TariffList_t* list)
  */
 void TLDelete(int id, TariffList_t *list)
 {
-    // TODO handle if customer has this tariff assigned
     Tariff_t *tariff = TLFindTariffByID(id, list->first);
     if (!tariff) {
         printf(GREEN"Wrong id (ID = %d), tariff not found"RESET"\n", id);
