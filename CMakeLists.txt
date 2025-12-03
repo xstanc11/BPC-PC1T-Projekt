@@ -4,8 +4,8 @@ project ("Project")
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
-set(CMAKE_BUILD_TYPE Debug)
-set(CMAKE_C_FLAGS_DEBUG -g3)
+# set(CMAKE_BUILD_TYPE Debug)
+# set(CMAKE_C_FLAGS_DEBUG -g3)
 
 set(SOURCES
   src/fileOP.c
