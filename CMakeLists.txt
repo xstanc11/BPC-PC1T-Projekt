@@ -1,16 +1,21 @@
-# CMakeList.txt : CMake project for FunExt, include source and define
-# project specific logic here.
-#
-cmake_minimum_required (VERSION 3.8)
+cmake_minimum_required (VERSION 3.10)
 
 project ("Project")
 
-# Add source to this project's executable.
-add_executable (main "main.c")
-
-if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET main PROPERTY CXX_STANDARD 20)
-endif()
-
-# TODO: Add tests and install targets if needed.
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_C_FLAGS_DEBUG -g3)
+
+set(SOURCES
+  src/fileOP.c
+  src/util.c
+  src/customer.c
+  src/tariff.c
+  src/familyTariff.c
+  src/main.c
+)
+
+add_executable(main ${SOURCES})
+
+target_include_directories(main PRIVATE include)
